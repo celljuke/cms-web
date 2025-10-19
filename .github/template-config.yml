@@ -1,0 +1,23 @@
+# Template repository configuration
+# This file helps GitHub understand this is a template repository
+
+name: Next.js Full-Stack Template
+description: A production-ready Next.js template with authentication, database, and API layer pre-configured
+topics:
+  - nextjs
+  - react
+  - typescript
+  - prisma
+  - trpc
+  - postgresql
+  - authentication
+  - tailwindcss
+  - shadcn-ui
+  - template
+  - starter
+  - boilerplate
+
+# Files to exclude when creating a new repository from this template
+# (These will be removed automatically)
+exclude:
+  - .github/template-config.yml
