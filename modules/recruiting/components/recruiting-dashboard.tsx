@@ -14,8 +14,10 @@ import {
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc/client";
 import { JobCard } from "./job-card";
+import { JobListItem } from "./job-list-item";
 import { JobsSkeleton } from "./jobs-skeleton";
 import { JobFilters } from "./job-filters";
+import { ViewSwitcher } from "./view-switcher";
 import type { Job } from "../types";
 import { useRouter } from "next/navigation";
 
@@ -24,6 +26,7 @@ export function RecruitingDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
+  const [view, setView] = useState<"card" | "list">("card");
 
   // Fetch jobs with tRPC
   const { data: jobs, isLoading: isFetching } =
@@ -179,23 +182,36 @@ export function RecruitingDashboard() {
           </div>
 
           <TabsContent value="jobs" className="mt-6">
-            {/* Filters */}
-            <JobFilters
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              statusFilter={statusFilter}
-              onStatusChange={setStatusFilter}
-            />
+            {/* Filters and View Switcher */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+              <div className="flex-1 w-full sm:w-auto">
+                <JobFilters
+                  searchQuery={searchQuery}
+                  onSearchChange={setSearchQuery}
+                  statusFilter={statusFilter}
+                  onStatusChange={setStatusFilter}
+                />
+              </div>
+              <ViewSwitcher view={view} onViewChange={setView} />
+            </div>
 
             {/* Jobs List */}
             {isLoading || isFetching ? (
               <JobsSkeleton />
             ) : filteredJobs && filteredJobs.length > 0 ? (
-              <div className="space-y-2">
-                {filteredJobs.map((job: Job) => (
-                  <JobCard key={job.job_id} job={job} />
-                ))}
-              </div>
+              view === "card" ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredJobs.map((job: Job) => (
+                    <JobCard key={job.job_id} job={job} />
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {filteredJobs.map((job: Job) => (
+                    <JobListItem key={job.job_id} job={job} />
+                  ))}
+                </div>
+              )
             ) : (
               <div className="text-center py-12">
                 <Briefcase className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
