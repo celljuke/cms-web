@@ -19,6 +19,7 @@ import {
   Play,
   Pause,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import type { Job } from "../types";
 
 interface JobCardProps {
@@ -26,6 +27,17 @@ interface JobCardProps {
 }
 
 export function JobCard({ job }: JobCardProps) {
+  const router = useRouter();
+
+  const handleCardClick = () => {
+    router.push(`/recruiting/jobs/${job.job_id}`);
+  };
+
+  const handleActionClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Action logic will be implemented here
+  };
+
   const getStatusColor = (status: string | null, isActive: number) => {
     if (!isActive) return "bg-gray-500/10 text-gray-700 dark:text-gray-300";
 
@@ -77,7 +89,10 @@ export function JobCard({ job }: JobCardProps) {
   };
 
   return (
-    <Card className="group h-full hover:shadow-lg transition-all duration-300 hover:border-blue-500/50 dark:hover:border-blue-800/50 py-2">
+    <Card
+      className="group h-full hover:shadow-lg transition-all duration-300 hover:border-blue-500/50 dark:hover:border-blue-800/50 py-2 cursor-pointer"
+      onClick={handleCardClick}
+    >
       <CardContent className="p-4 h-full flex flex-col">
         {/* Header with Status */}
         <div className="flex items-center justify-between mb-4">
@@ -149,7 +164,12 @@ export function JobCard({ job }: JobCardProps) {
           <div className="flex items-center gap-2 mt-4 pt-3 border-t">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" className="flex-1 gap-1.5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 gap-1.5"
+                  onClick={handleActionClick}
+                >
                   <ExternalLink className="h-3.5 w-3.5" />
                   View in CATS
                 </Button>
@@ -161,7 +181,12 @@ export function JobCard({ job }: JobCardProps) {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" className="h-8 w-8">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={handleActionClick}
+                >
                   {job.is_active ? (
                     <Pause className="h-3.5 w-3.5" />
                   ) : (
