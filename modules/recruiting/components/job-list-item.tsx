@@ -4,13 +4,18 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Briefcase,
   MapPin,
-  DollarSign,
   Clock,
   User,
   ExternalLink,
-  Edit,
+  Play,
   Pause,
 } from "lucide-react";
 import type { Job } from "../types";
@@ -35,6 +40,21 @@ export function JobListItem({ job }: JobListItemProps) {
     }
   };
 
+  const getIconGradient = (status: string | null, isActive: number) => {
+    if (!isActive) return "from-gray-400 to-gray-500";
+
+    switch (status) {
+      case "Active":
+        return "from-green-500 to-emerald-600";
+      case "OnHold":
+        return "from-yellow-500 to-orange-500";
+      case "Closed":
+        return "from-red-500 to-rose-600";
+      default:
+        return "from-blue-500 to-cyan-500";
+    }
+  };
+
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -47,12 +67,17 @@ export function JobListItem({ job }: JobListItemProps) {
   return (
     <div className="group flex items-center gap-4 p-4 rounded-lg border bg-card hover:shadow-md hover:border-blue-500/50 dark:hover:border-blue-800/50 transition-all duration-300">
       {/* Icon */}
-      <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white shrink-0">
+      <div
+        className={`h-10 w-10 rounded-lg bg-gradient-to-br ${getIconGradient(
+          job.status,
+          job.is_active
+        )} flex items-center justify-center text-white shrink-0 transition-colors duration-300`}
+      >
         <Briefcase className="h-5 w-5" />
       </div>
 
       {/* Job Info - Grid with fixed column widths */}
-      <div className="flex-1 min-w-0 grid grid-cols-[1fr_180px_180px_auto] gap-6 items-center">
+      <div className="flex-1 min-w-0 grid grid-cols-[1fr_200px_200px_auto] gap-6 items-center">
         {/* Title & ID */}
         <div className="min-w-0">
           <h3 className="font-semibold text-base mb-1 truncate group-hover:text-primary transition-colors">
@@ -63,23 +88,15 @@ export function JobListItem({ job }: JobListItemProps) {
           </div>
         </div>
 
-        {/* Location & Salary - Fixed width column */}
-        <div className="flex flex-col gap-1.5 text-sm min-w-0">
+        {/* Location - Fixed width column */}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground min-w-0">
           {job.location ? (
-            <div className="flex items-center gap-1.5 text-muted-foreground">
+            <>
               <MapPin className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">{job.location}</span>
-            </div>
+            </>
           ) : (
-            <div className="h-5" />
-          )}
-          {job.salary ? (
-            <div className="flex items-center gap-1.5 text-muted-foreground">
-              <DollarSign className="h-3.5 w-3.5 shrink-0" />
-              <span className="truncate">{job.salary}</span>
-            </div>
-          ) : (
-            <div className="h-5" />
+            <span className="text-muted-foreground/50">No location</span>
           )}
         </div>
 
@@ -93,7 +110,7 @@ export function JobListItem({ job }: JobListItemProps) {
               </span>
             </div>
           ) : (
-            <div className="h-5" />
+            <div className="h-4" />
           )}
           {job.assigned_user ? (
             <div className="flex items-center gap-1.5">
@@ -101,12 +118,12 @@ export function JobListItem({ job }: JobListItemProps) {
               <span className="truncate">{job.assigned_user.name}</span>
             </div>
           ) : (
-            <div className="h-5" />
+            <div className="h-4" />
           )}
         </div>
 
-        {/* Status, Avatar & Actions - Fixed width */}
-        <div className="flex items-center gap-3 justify-end w-[280px]">
+        {/* Status & Actions - Fixed width */}
+        <div className="flex items-center gap-3 justify-end w-[260px]">
           <Badge
             className={`${getStatusColor(
               job.status,
@@ -116,17 +133,41 @@ export function JobListItem({ job }: JobListItemProps) {
             {job.is_active ? job.status || "Active" : "Inactive"}
           </Badge>
 
-          <div className="flex items-center gap-1 opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-              <ExternalLink className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-              <Edit className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-              <Pause className="h-4 w-4" />
-            </Button>
-          </div>
+          <TooltipProvider>
+            <div className="flex items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" className="gap-1.5 h-8">
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Open job in CATS ATS system</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8 shrink-0"
+                  >
+                    {job.is_active ? (
+                      <Pause className="h-3.5 w-3.5" />
+                    ) : (
+                      <Play className="h-3.5 w-3.5" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    {job.is_active ? "Pause this job" : "Activate this job"}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </TooltipProvider>
         </div>
       </div>
     </div>
