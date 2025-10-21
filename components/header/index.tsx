@@ -1,15 +1,15 @@
 "use client";
 
-import Image from "next/image";
 import { Settings, LogOut, Moon, Sun, User, ExternalLink } from "lucide-react";
 import { useTheme } from "next-themes";
-import { authClient } from "@/lib/auth-client";
+import { useAuth, useSignOut } from "@/modules/auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -18,10 +18,8 @@ import { Logo } from "./logo";
 
 export function Header() {
   const { theme, setTheme } = useTheme();
-
-  const handleSignOut = async () => {
-    await authClient.signOut();
-  };
+  const { user } = useAuth();
+  const { handleSignOut } = useSignOut();
 
   return (
     <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">
@@ -58,11 +56,28 @@ export function Header() {
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                 <Avatar>
                   <AvatarImage src="/selcuk_photo.jpeg" alt="Profile" />
-                  <AvatarFallback>SK</AvatarFallback>
+                  <AvatarFallback>
+                    {user?.email?.substring(0, 2).toUpperCase() || "SK"}
+                  </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
+              {user && (
+                <>
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        {user.email.split("@")[0]}
+                      </p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                </>
+              )}
               <DropdownMenuItem>
                 <User className="mr-2 h-4 w-4" />
                 <span>Account</span>
@@ -72,7 +87,10 @@ export function Header() {
                 <span>Access ATS</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut}>
+              <DropdownMenuItem
+                onClick={handleSignOut}
+                className="text-destructive focus:text-destructive"
+              >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Sign Out</span>
               </DropdownMenuItem>
