@@ -90,7 +90,7 @@ export function JobCard({ job }: JobCardProps) {
 
   return (
     <Card
-      className="group h-full hover:shadow-lg transition-all duration-300 hover:border-blue-500/50 dark:hover:border-blue-800/50 py-2 cursor-pointer"
+      className="group h-full shadow-none hover:shadow-lg transition-all duration-300 hover:border-blue-500/50 dark:hover:border-blue-800/50 py-2 cursor-pointer"
       onClick={handleCardClick}
     >
       <CardContent className="p-4 h-full flex flex-col">
