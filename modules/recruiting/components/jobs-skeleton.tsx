@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
 
 export function JobsSkeleton() {
   return (
@@ -42,8 +43,8 @@ export function JobsSkeleton() {
         </div>
 
         {/* Animated Progress Bar */}
-        <div className="w-64 h-1 bg-muted rounded-full overflow-hidden mx-auto">
-          <div className="h-full bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500 animate-[shimmer_2s_ease-in-out_infinite] bg-[length:200%_100%]" />
+        <div className="w-64 mx-auto">
+          <Progress value={65} className="h-1.5 animate-pulse" />
         </div>
       </div>
 

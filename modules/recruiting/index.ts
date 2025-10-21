@@ -5,7 +5,12 @@ export { JobsSkeleton } from "./components/jobs-skeleton";
 export { JobFilters } from "./components/job-filters";
 export { ViewSwitcher } from "./components/view-switcher";
 export { JobDetail } from "./components/job-detail";
+export { JobDetailsTab } from "./components/job-details-tab";
+export { JobDetailLoading } from "./components/job-detail-loading";
+export { ConversionFunnel } from "./components/conversion-funnel";
+export { ApplicantsTable } from "./components/applicants-table";
 export { useJobDetail } from "./hooks/use-job-detail";
+export { useJobAnalytics } from "./hooks/use-job-analytics";
 export type {
   Job,
   JobDetail as JobDetailType,
@@ -15,4 +20,7 @@ export type {
   ApplicationForm,
   Owner,
   Recruiter,
+  JobAnalytics,
+  Applicant,
+  JobAnalyticsResponse,
 } from "./types";

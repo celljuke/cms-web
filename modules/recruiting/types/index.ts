@@ -99,3 +99,38 @@ export interface JobDetail {
   created_by: number | null;
   assigned_user: AssignedUser | null;
 }
+
+export interface JobAnalytics {
+  values: {
+    Total: number;
+    Contacted: number;
+    Replied: number;
+    Qualified: number;
+    Interviewed: number;
+    Hired: number;
+  };
+  funnel: {
+    Total: number;
+    Contacted: number;
+    Replied: number;
+    Qualified: number;
+    Interviewed: number;
+    Hired: number;
+  };
+}
+
+export interface Applicant {
+  full_name: string;
+  email: string;
+  phone: string | null;
+  status: string;
+  rating: number;
+  candidate_id: number;
+  attention_needed: boolean;
+  attention_reason: string | null;
+}
+
+export interface JobAnalyticsResponse {
+  analytics: JobAnalytics;
+  applicants: Applicant[];
+}

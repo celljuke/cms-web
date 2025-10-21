@@ -16,4 +16,14 @@ export const recruitingRouter = router({
     .query(({ input, ctx }) => {
       return recruitingService.getJobDetail(input.jobId, ctx.token);
     }),
+
+  getJobAnalytics: protectedProcedure
+    .input(
+      z.object({
+        jobId: z.number(),
+      })
+    )
+    .query(({ input, ctx }) => {
+      return recruitingService.getJobAnalytics(input.jobId, ctx.token);
+    }),
 });
