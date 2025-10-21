@@ -11,6 +11,7 @@ export { ConversionFunnel } from "./components/conversion-funnel";
 export { ApplicantsTable } from "./components/applicants-table";
 export { useJobDetail } from "./hooks/use-job-detail";
 export { useJobAnalytics } from "./hooks/use-job-analytics";
+export { useApplicantsData } from "./hooks/use-applicants-data";
 export type {
   Job,
   JobDetail as JobDetailType,
@@ -23,4 +24,6 @@ export type {
   JobAnalytics,
   Applicant,
   JobAnalyticsResponse,
+  CandidateActivity,
+  CandidateActivitiesResponse,
 } from "./types";

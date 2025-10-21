@@ -7,6 +7,7 @@ import type {
   Job,
   JobDetail,
   JobAnalyticsResponse,
+  CandidateActivitiesResponse,
 } from "@/modules/recruiting/types";
 
 const API_BASE_URL =
@@ -82,6 +83,35 @@ export class RecruitingService {
       const errorText = await response.text();
       throw new Error(
         `Failed to fetch job analytics: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get candidate activities
+   */
+  async getCandidateActivities(
+    candidateId: number,
+    token: string
+  ): Promise<CandidateActivitiesResponse> {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/jobs-submission/candidate/${candidateId}/activities`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch candidate activities: ${response.status} ${response.statusText} - ${errorText}`
       );
     }
 

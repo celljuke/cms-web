@@ -142,7 +142,7 @@ export function ConversionFunnel({ analytics }: ConversionFunnelProps) {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Bar Chart - Candidate Count */}
-        <Card>
+        <Card className="shadow-none">
           <CardHeader>
             <CardTitle>Candidate Distribution</CardTitle>
           </CardHeader>
@@ -181,7 +181,7 @@ export function ConversionFunnel({ analytics }: ConversionFunnelProps) {
         </Card>
 
         {/* Line Chart - Conversion Rate */}
-        <Card>
+        <Card className="shadow-none">
           <CardHeader>
             <CardTitle>Conversion Rate Trend</CardTitle>
           </CardHeader>
@@ -223,7 +223,7 @@ export function ConversionFunnel({ analytics }: ConversionFunnelProps) {
       </div>
 
       {/* Funnel Visualization with Progress Bars */}
-      <Card>
+      <Card className="shadow-none">
         <CardHeader>
           <CardTitle>Hiring Pipeline</CardTitle>
         </CardHeader>

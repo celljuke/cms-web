@@ -20,8 +20,8 @@ import { useJobDetail } from "../hooks/use-job-detail";
 import { useJobAnalytics } from "../hooks/use-job-analytics";
 import { JobDetailsTab } from "./job-details-tab";
 import { ConversionFunnel } from "./conversion-funnel";
-import { ApplicantsTable } from "./applicants-table";
 import { JobDetailLoading } from "./job-detail-loading";
+import { ApplicantsTab } from "./applicants-tab";
 
 interface JobDetailProps {
   jobId: number;
@@ -30,12 +30,16 @@ interface JobDetailProps {
 export function JobDetail({ jobId }: JobDetailProps) {
   const router = useRouter();
   const { job, isLoading, error } = useJobDetail(jobId);
+  const [activeTab, setActiveTab] = useState("job-details");
+
+  // Only fetch analytics when user navigates to tabs that need it
+  const shouldFetchAnalytics =
+    activeTab === "conversion-funnel" || activeTab === "applicants";
   const {
     analytics,
     applicants,
     isLoading: analyticsLoading,
-  } = useJobAnalytics(jobId);
-  const [activeTab, setActiveTab] = useState("job-details");
+  } = useJobAnalytics(jobId, shouldFetchAnalytics);
 
   const getStatusColor = (status: string | null, isActive: number) => {
     if (!isActive) return "bg-gray-500/10 text-gray-700 dark:text-gray-300";
@@ -135,7 +139,7 @@ export function JobDetail({ jobId }: JobDetailProps) {
             <TabsTrigger value="applicants" className="gap-2">
               <Users className="h-4 w-4" />
               Applicants
-              {applicants.length > 0 && (
+              {!analyticsLoading && applicants.length > 0 && (
                 <Badge variant="secondary" className="ml-1">
                   {applicants.length}
                 </Badge>
@@ -228,7 +232,7 @@ export function JobDetail({ jobId }: JobDetailProps) {
                 </CardContent>
               </Card>
             ) : (
-              <ApplicantsTable applicants={applicants} />
+              <ApplicantsTab applicants={applicants} />
             )}
           </TabsContent>
 

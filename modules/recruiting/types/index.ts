@@ -134,3 +134,23 @@ export interface JobAnalyticsResponse {
   analytics: JobAnalytics;
   applicants: Applicant[];
 }
+
+export interface CandidateActivity {
+  id: number;
+  data_item: {
+    id: number;
+    type: string;
+  };
+  date: string;
+  regarding_id: number;
+  type: string;
+  notes: string | null;
+  annotation: string | null;
+  entered_by_id: number;
+  date_created: string;
+  date_modified: string;
+}
+
+export interface CandidateActivitiesResponse {
+  activities: CandidateActivity[];
+}

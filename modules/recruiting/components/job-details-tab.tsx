@@ -39,7 +39,7 @@ export function JobDetailsTab({ job }: JobDetailsTabProps) {
       {/* Left Column - Main Details */}
       <div className="lg:col-span-2 space-y-6">
         {/* Job Description */}
-        <Card className="hover:shadow-md transition-shadow py-2">
+        <Card className="py-2 shadow-none">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-4">
               <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
@@ -56,7 +56,7 @@ export function JobDetailsTab({ job }: JobDetailsTabProps) {
 
         {/* Screening Criteria */}
         {job.criteria && (
-          <Card className="hover:shadow-md transition-shadow py-2">
+          <Card className="py-2 shadow-none">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center">
@@ -74,7 +74,7 @@ export function JobDetailsTab({ job }: JobDetailsTabProps) {
 
         {/* Screening Email */}
         {job.screening_email && (
-          <Card className="hover:shadow-md transition-shadow py-2">
+          <Card className="py-2 shadow-none">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-10 w-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
@@ -94,7 +94,7 @@ export function JobDetailsTab({ job }: JobDetailsTabProps) {
       {/* Right Column - Metadata */}
       <div className="space-y-6">
         {/* Quick Details */}
-        <Card className="hover:shadow-md transition-shadow py-2">
+        <Card className="py-2 shadow-none">
           <CardContent className="p-4">
             <h2 className="font-semibold mb-4">Quick Details</h2>
             <div className="space-y-4">
@@ -115,7 +115,9 @@ export function JobDetailsTab({ job }: JobDetailsTabProps) {
                   <DollarSign className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <p className="text-sm font-medium mb-1">Pay Range</p>
-                    <p className="text-sm text-muted-foreground">{job.max_rate}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {job.max_rate}
+                    </p>
                   </div>
                 </div>
               )}
@@ -125,7 +127,9 @@ export function JobDetailsTab({ job }: JobDetailsTabProps) {
                   <Users className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <p className="text-sm font-medium mb-1">Openings</p>
-                    <p className="text-sm text-muted-foreground">{job.openings}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {job.openings}
+                    </p>
                   </div>
                 </div>
               )}
@@ -147,7 +151,7 @@ export function JobDetailsTab({ job }: JobDetailsTabProps) {
 
         {/* Company */}
         {job.company && (
-          <Card className="hover:shadow-md transition-shadow py-2">
+          <Card className="py-2 shadow-none">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-4">
                 <Building2 className="h-5 w-5" />
@@ -162,7 +166,7 @@ export function JobDetailsTab({ job }: JobDetailsTabProps) {
         )}
 
         {/* Team */}
-        <Card className="hover:shadow-md transition-shadow py-2">
+        <Card className="py-2 shadow-none">
           <CardContent className="p-4">
             <h2 className="font-semibold mb-4">Team</h2>
             <div className="space-y-4">
@@ -177,7 +181,9 @@ export function JobDetailsTab({ job }: JobDetailsTabProps) {
 
               {job.recruiter && (
                 <div>
-                  <p className="text-sm text-muted-foreground mb-2">Recruiter</p>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Recruiter
+                  </p>
                   <p className="text-sm font-medium">
                     {job.recruiter.first_name} {job.recruiter.last_name}
                   </p>
@@ -186,8 +192,12 @@ export function JobDetailsTab({ job }: JobDetailsTabProps) {
 
               {job.assigned_user && (
                 <div>
-                  <p className="text-sm text-muted-foreground mb-2">Assigned User</p>
-                  <p className="text-sm font-medium">{job.assigned_user.name}</p>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Assigned User
+                  </p>
+                  <p className="text-sm font-medium">
+                    {job.assigned_user.name}
+                  </p>
                   <p className="text-xs text-muted-foreground mt-1">
                     {job.assigned_user.email}
                   </p>
@@ -198,7 +208,7 @@ export function JobDetailsTab({ job }: JobDetailsTabProps) {
         </Card>
 
         {/* Timeline */}
-        <Card className="hover:shadow-md transition-shadow py-2">
+        <Card className="py-2 shadow-none">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-4">
               <Clock className="h-5 w-5" />
@@ -207,11 +217,17 @@ export function JobDetailsTab({ job }: JobDetailsTabProps) {
             <div className="space-y-3">
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Created</p>
-                <p className="text-sm font-medium">{formatDate(job.date_created)}</p>
+                <p className="text-sm font-medium">
+                  {formatDate(job.date_created)}
+                </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Last Modified</p>
-                <p className="text-sm font-medium">{formatDate(job.date_modified)}</p>
+                <p className="text-sm text-muted-foreground mb-1">
+                  Last Modified
+                </p>
+                <p className="text-sm font-medium">
+                  {formatDate(job.date_modified)}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -219,7 +235,7 @@ export function JobDetailsTab({ job }: JobDetailsTabProps) {
 
         {/* Application Forms */}
         {job.application_forms && job.application_forms.length > 0 && (
-          <Card className="hover:shadow-md transition-shadow py-2">
+          <Card className="py-2 shadow-none">
             <CardContent className="p-4">
               <h2 className="font-semibold mb-4">Application Forms</h2>
               <ul className="space-y-2">
@@ -240,4 +256,3 @@ export function JobDetailsTab({ job }: JobDetailsTabProps) {
     </div>
   );
 }
-
