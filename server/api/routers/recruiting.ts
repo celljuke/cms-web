@@ -1,19 +1,19 @@
 import { recruitingService } from "@/server/services/recruiting";
-import { publicProcedure, router } from "../trpc";
+import { protectedProcedure, router } from "../trpc";
 import { z } from "zod";
 
 export const recruitingRouter = router({
-  getJobs: publicProcedure.query(() => {
-    return recruitingService.getJobs();
+  getJobs: protectedProcedure.query(({ ctx }) => {
+    return recruitingService.getJobs(ctx.token);
   }),
 
-  getJobDetail: publicProcedure
+  getJobDetail: protectedProcedure
     .input(
       z.object({
         jobId: z.number(),
       })
     )
-    .query(({ input }) => {
-      return recruitingService.getJobDetail(input.jobId);
+    .query(({ input, ctx }) => {
+      return recruitingService.getJobDetail(input.jobId, ctx.token);
     }),
 });

@@ -1,29 +1,56 @@
-import mockJobs from "./mock-jobs.json";
-import mockJobDetail from "./mock-job-detail.json";
+/**
+ * Recruiting Service
+ * Handles job listings and details from the Career Match Solutions API
+ */
+
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://54.176.184.13:5006";
 
 export class RecruitingService {
   /**
-   * Main search method for jobs
+   * Fetch all jobs from the API
    */
-  async getJobs() {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1500)); // 1.5 second delay
-    return mockJobs;
+  async getJobs(token: string) {
+    const response = await fetch(`${API_BASE_URL}/recruiting/jobs/`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store", // Disable caching for fresh data
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch jobs: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
   }
 
   /**
    * Get job detail by ID
    */
-  async getJobDetail(jobId: number) {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1200)); // 1.2 second delay
+  async getJobDetail(jobId: number, token: string) {
+    const response = await fetch(`${API_BASE_URL}/recruiting/jobs/${jobId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    });
 
-    // In a real implementation, this would fetch from the API
-    // For now, return mock data for any job ID
-    return {
-      ...mockJobDetail,
-      job_id: jobId,
-    };
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch job detail: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
   }
 }
 

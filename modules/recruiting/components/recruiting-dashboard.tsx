@@ -25,23 +25,11 @@ export function RecruitingDashboard() {
   const [tab, setTab] = useState("jobs");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [isLoading, setIsLoading] = useState(true);
   const [view, setView] = useState<"card" | "list">("card");
 
   // Fetch jobs with tRPC
   const { data: jobs, isLoading: isFetching } =
     trpc.recruiting.getJobs.useQuery();
-
-  // Add artificial delay to show loading state (simulating slow third-party API)
-  useEffect(() => {
-    if (jobs) {
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 2000); // 2 second delay to show the fancy loader
-
-      return () => clearTimeout(timer);
-    }
-  }, [jobs]);
 
   // Filter jobs based on search and status
   const filteredJobs = jobs?.filter((job: Job) => {
@@ -196,7 +184,7 @@ export function RecruitingDashboard() {
             </div>
 
             {/* Jobs List */}
-            {isLoading || isFetching ? (
+            {isFetching ? (
               <JobsSkeleton />
             ) : filteredJobs && filteredJobs.length > 0 ? (
               view === "card" ? (

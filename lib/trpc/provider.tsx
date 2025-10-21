@@ -12,6 +12,22 @@ export default function Provider({ children }: { children: React.ReactNode }) {
       links: [
         httpBatchLink({
           url: "/api/trpc",
+          headers() {
+            // Get token from localStorage
+            const token =
+              typeof window !== "undefined"
+                ? localStorage.getItem("access_token")
+                : null;
+
+            // Return headers with Authorization if token exists
+            if (token) {
+              return {
+                Authorization: `Bearer ${token}`,
+              };
+            }
+
+            return {};
+          },
         }),
       ],
     })
