@@ -56,9 +56,9 @@ export interface Job {
   category_name: string | null;
   type: string | null;
   company: string | null;
-  application_forms: unknown[];
-  owner: unknown | null;
-  recruiter: unknown | null;
+  application_forms?: unknown[];
+  owner?: unknown | null;
+  recruiter?: unknown | null;
   job_id: number;
   is_active: number;
   created_at: string | null;
