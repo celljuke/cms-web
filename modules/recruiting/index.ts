@@ -8,7 +8,7 @@ export { JobDetail } from "./components/job-detail";
 export { JobDetailsTab } from "./components/job-details-tab";
 export { JobDetailLoading } from "./components/job-detail-loading";
 export { ConversionFunnel } from "./components/conversion-funnel";
-export { ApplicantsTable } from "./components/applicants-table";
+export { ApplicantsTab } from "./components/applicants-tab";
 export { useJobDetail } from "./hooks/use-job-detail";
 export { useJobAnalytics } from "./hooks/use-job-analytics";
 export { useApplicantsData } from "./hooks/use-applicants-data";
