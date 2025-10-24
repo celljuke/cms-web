@@ -44,10 +44,15 @@ export const recruitingRouter = router({
     .input(
       z.object({
         jobId: z.number(),
+        isCatId: z.boolean().default(true),
       })
     )
     .query(({ input, ctx }) => {
-      return recruitingService.getJobActivities(input.jobId, ctx.token);
+      return recruitingService.getJobActivities(
+        input.jobId,
+        input.isCatId,
+        ctx.token
+      );
     }),
 
   getActivityUser: protectedProcedure
@@ -58,5 +63,20 @@ export const recruitingRouter = router({
     )
     .query(({ input, ctx }) => {
       return recruitingService.getActivityUser(input.userId, ctx.token);
+    }),
+
+  getJobAttachments: protectedProcedure
+    .input(
+      z.object({
+        jobId: z.number(),
+        isCatId: z.boolean().default(true),
+      })
+    )
+    .query(({ input, ctx }) => {
+      return recruitingService.getJobAttachments(
+        input.jobId,
+        input.isCatId,
+        ctx.token
+      );
     }),
 });

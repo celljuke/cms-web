@@ -186,3 +186,13 @@ export interface ActivityUser {
     phones: { href: string };
   };
 }
+
+export interface JobAttachment {
+  id: string;
+  filename: string;
+  created: string;
+}
+
+export interface JobAttachmentsResponse {
+  attachments: JobAttachment[];
+}

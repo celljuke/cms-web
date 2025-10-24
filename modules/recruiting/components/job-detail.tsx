@@ -23,6 +23,7 @@ import { ConversionFunnel } from "./conversion-funnel";
 import { JobDetailLoading } from "./job-detail-loading";
 import { ApplicantsTab } from "./applicants-tab";
 import { ActivitiesTab } from "./activities-tab";
+import { AttachmentsTab } from "./attachments-tab";
 
 interface JobDetailProps {
   jobId: number;
@@ -237,19 +238,9 @@ export function JobDetail({ jobId }: JobDetailProps) {
             )}
           </TabsContent>
 
-          {/* Attachments Tab - Placeholder */}
+          {/* Attachments Tab */}
           <TabsContent value="attachments">
-            <Card className="hover:shadow-md transition-shadow">
-              <CardContent className="p-12 text-center">
-                <Paperclip className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
-                  Attachments Coming Soon
-                </h3>
-                <p className="text-muted-foreground">
-                  Upload and manage job-related documents
-                </p>
-              </CardContent>
-            </Card>
+            <AttachmentsTab jobId={jobId} />
           </TabsContent>
 
           {/* Activities Tab */}

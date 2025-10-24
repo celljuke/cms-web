@@ -10,6 +10,7 @@ import type {
   CandidateActivitiesResponse,
   JobActivitiesResponse,
   ActivityUser,
+  JobAttachmentsResponse,
 } from "@/modules/recruiting/types";
 
 const API_BASE_URL =
@@ -125,10 +126,11 @@ export class RecruitingService {
    */
   async getJobActivities(
     jobId: number,
+    isCatId: boolean,
     token: string
   ): Promise<JobActivitiesResponse> {
     const response = await fetch(
-      `${API_BASE_URL}/recruiting/jobs-submission/${jobId}/activities/true`,
+      `${API_BASE_URL}/recruiting/jobs-submission/${jobId}/activities/${isCatId}`,
       {
         method: "GET",
         headers: {
@@ -169,6 +171,36 @@ export class RecruitingService {
       const errorText = await response.text();
       throw new Error(
         `Failed to fetch user: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get job attachments
+   */
+  async getJobAttachments(
+    jobId: number,
+    isCatId: boolean,
+    token: string
+  ): Promise<JobAttachmentsResponse> {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/jobs-submission/${jobId}/attachments/${isCatId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch attachments: ${response.status} ${response.statusText} - ${errorText}`
       );
     }
 
