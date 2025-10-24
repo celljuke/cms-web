@@ -36,7 +36,7 @@ type SignInFormValues = z.infer<typeof signInSchema>;
  */
 export function SignInForm() {
   const router = useRouter();
-  
+
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -51,18 +51,22 @@ export function SignInForm() {
       if (typeof window !== "undefined") {
         localStorage.setItem("access_token", data.accessToken);
         localStorage.setItem("token_type", data.tokenType);
-        
+
         // Set cookie for middleware
-        document.cookie = `access_token=${data.accessToken}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+        document.cookie = `access_token=${data.accessToken}; path=/; max-age=${
+          7 * 24 * 60 * 60
+        }; SameSite=Lax`;
       }
 
       // Show success message
       toast.success("Welcome back!", {
-        description: `Signed in as ${data.user?.email || form.getValues("username")}`,
+        description: `Signed in as ${
+          data.user?.email || form.getValues("username")
+        }`,
       });
 
       // Redirect to dashboard
-      router.push("/apps");
+      router.push("/recruiting");
     },
     onError: (error) => {
       toast.error("Sign in failed", {

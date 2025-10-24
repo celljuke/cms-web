@@ -28,7 +28,7 @@ export function proxy(request: NextRequest) {
 
   // If trying to access sign-in page while already authenticated
   if (isPublicRoute && token && pathname === "/sign-in") {
-    return NextResponse.redirect(new URL("/apps", request.url));
+    return NextResponse.redirect(new URL("/recruiting", request.url));
   }
 
   return NextResponse.next();

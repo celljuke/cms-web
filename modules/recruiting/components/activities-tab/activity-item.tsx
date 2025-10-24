@@ -88,63 +88,74 @@ export function ActivityItem({ activity }: ActivityItemProps) {
   const candidateName = getCandidateName();
 
   return (
-    <Card className="p-4 shadow-none">
-      <div className="space-y-3">
+    <Card className="p-3 md:p-4 shadow-none">
+      <div className="space-y-2 md:space-y-3">
         {/* Header Row */}
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-start gap-3 flex-1 min-w-0">
-            {/* Icon */}
-            <div
-              className={`w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 ${colorClass}`}
-            >
-              <Icon className="w-4 h-4" />
+        <div className="flex items-start gap-2 md:gap-3">
+          {/* Icon */}
+          <div
+            className={`w-8 h-8 md:w-9 md:h-9 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 ${colorClass}`}
+          >
+            <Icon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 min-w-0 space-y-1.5 md:space-y-1">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-1 md:gap-4">
+              {/* Title Area */}
+              <div className="space-y-1">
+                {activity.annotation && (
+                  <Badge
+                    variant={badgeVariant}
+                    className="text-[10px] md:text-xs"
+                  >
+                    {activity.annotation}
+                  </Badge>
+                )}
+                {candidateName && (
+                  <div className="flex items-center gap-1.5 text-xs md:text-sm text-gray-600 dark:text-gray-400">
+                    <User className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                    <span>{candidateName}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Time Badge */}
+              <div className="flex items-center gap-1 md:gap-1.5 text-[10px] md:text-xs text-muted-foreground flex-shrink-0">
+                <Clock className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                <span className="font-medium">
+                  {formatDistanceToNow(new Date(activity.date), {
+                    addSuffix: true,
+                  })}
+                </span>
+              </div>
             </div>
 
-            {/* Title Area */}
-            <div className="flex-1 min-w-0 space-y-1">
-              {activity.annotation && (
-                <Badge variant={badgeVariant} className="text-xs">
-                  {activity.annotation}
+            {/* Notes */}
+            {activity.notes && (
+              <div className="text-xs md:text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                {activity.notes}
+              </div>
+            )}
+
+            {/* Footer Meta */}
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1.5 md:gap-3 text-[10px] md:text-xs text-muted-foreground pt-1">
+              <div className="flex items-center gap-2 md:gap-3">
+                <Badge
+                  variant="outline"
+                  className="text-[10px] md:text-xs capitalize"
+                >
+                  {activity.type}
                 </Badge>
-              )}
-              {candidateName && (
-                <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
-                  <User className="w-3.5 h-3.5" />
-                  <span>{candidateName}</span>
-                </div>
-              )}
+                <span className="truncate">
+                  Candidate ID: {activity.data_item.id}
+                </span>
+              </div>
+              <span className="text-[10px] md:text-[11px]">
+                {format(new Date(activity.date), "MMM d, h:mm a")}
+              </span>
             </div>
           </div>
-
-          {/* Time Badge */}
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground flex-shrink-0">
-            <Clock className="w-3.5 h-3.5" />
-            <span className="font-medium">
-              {formatDistanceToNow(new Date(activity.date), {
-                addSuffix: true,
-              })}
-            </span>
-          </div>
-        </div>
-
-        {/* Notes */}
-        {activity.notes && (
-          <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed pl-12">
-            {activity.notes}
-          </div>
-        )}
-
-        {/* Footer Meta */}
-        <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground pl-12">
-          <div className="flex items-center gap-3">
-            <Badge variant="outline" className="text-xs capitalize">
-              {activity.type}
-            </Badge>
-            <span>Candidate ID: {activity.data_item.id}</span>
-          </div>
-          <span className="text-[11px]">
-            {format(new Date(activity.date), "MMM d, h:mm a")}
-          </span>
         </div>
       </div>
     </Card>

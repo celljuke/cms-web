@@ -6,11 +6,9 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="font-sans antialiased">
+    <div className="font-sans antialiased min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header />
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-        {children}
-      </div>
-    </main>
+      {children}
+    </div>
   );
 }

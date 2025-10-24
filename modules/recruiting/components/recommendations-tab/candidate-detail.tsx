@@ -52,24 +52,39 @@ export function CandidateDetail({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex items-start gap-4">
-        <div className="flex-shrink-0 relative">
-          <div
-            className={`h-20 w-20 rounded-full flex items-center justify-center text-3xl font-bold border-2 ${getScoreColor(
-              matchScore
-            )}`}
-          >
-            {initials}
+      <div className="flex flex-col md:flex-row items-start gap-3 md:gap-4">
+        <div className="flex items-start gap-3 w-full md:w-auto">
+          <div className="flex-shrink-0 relative">
+            <div
+              className={`h-16 w-16 md:h-20 md:w-20 rounded-full flex items-center justify-center text-2xl md:text-3xl font-bold border-2 ${getScoreColor(
+                matchScore
+              )}`}
+            >
+              {initials}
+            </div>
+            <div className="absolute -top-1 -right-1 md:-top-2 md:-right-2 h-6 w-6 md:h-8 md:w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] md:text-xs font-bold shadow-md">
+              #{rank}
+            </div>
           </div>
-          <div className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold shadow-md">
-            #{rank}
+
+          <div className="flex-1 md:hidden">
+            <div className="flex items-center gap-2 mb-1">
+              <h2 className="text-lg font-bold truncate">{candidate.name}</h2>
+              <div
+                className={`px-2 py-0.5 rounded-full text-xs font-semibold text-white ${getScoreBadgeColor(
+                  matchScore
+                )} flex-shrink-0`}
+              >
+                {matchScore}%
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
+        <div className="flex-1 w-full">
+          <div className="hidden md:flex items-center gap-2 mb-2">
             <h2 className="text-2xl font-bold">{candidate.name}</h2>
             <div
               className={`px-3 py-1 rounded-full text-sm font-semibold text-white ${getScoreBadgeColor(
@@ -81,16 +96,16 @@ export function CandidateDetail({
           </div>
 
           {/* Contact & Location */}
-          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+          <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-4 text-xs md:text-sm text-muted-foreground">
             {candidate.email && (
               <div className="flex items-center gap-1.5">
-                <Mail className="h-4 w-4" />
-                <span>{candidate.email}</span>
+                <Mail className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
+                <span className="truncate">{candidate.email}</span>
               </div>
             )}
             {(candidate.city || candidate.state) && (
               <div className="flex items-center gap-1.5">
-                <MapPin className="h-4 w-4" />
+                <MapPin className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
                 <span>
                   {[candidate.city, candidate.state].filter(Boolean).join(", ")}
                 </span>
@@ -98,20 +113,21 @@ export function CandidateDetail({
             )}
             {candidate.experience_years > 0 && (
               <div className="flex items-center gap-1.5">
-                <Briefcase className="h-4 w-4" />
+                <Briefcase className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
                 <span>{candidate.experience_years} years experience</span>
               </div>
             )}
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-2 mt-4">
+          <div className="flex flex-col md:flex-row gap-2 mt-3 md:mt-4">
             {onViewInCats && (
               <Button
                 onClick={() => onViewInCats(candidate.id)}
-                className="gap-2"
+                className="gap-2 w-full md:w-auto text-sm"
+                size="sm"
               >
-                <ExternalLink className="h-4 w-4" />
+                <ExternalLink className="h-3.5 w-3.5 md:h-4 md:w-4" />
                 View in CATS
               </Button>
             )}
@@ -119,9 +135,10 @@ export function CandidateDetail({
               <Button
                 onClick={() => onViewSimilar(candidate.id)}
                 variant="outline"
-                className="gap-2"
+                className="gap-2 w-full md:w-auto text-sm"
+                size="sm"
               >
-                <Users className="h-4 w-4" />
+                <Users className="h-3.5 w-3.5 md:h-4 md:w-4" />
                 Find Similar Candidates
               </Button>
             )}
@@ -134,13 +151,17 @@ export function CandidateDetail({
       {/* Skills */}
       {candidate.skills && candidate.skills.length > 0 && (
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Award className="h-5 w-5 text-muted-foreground" />
-            <h3 className="text-lg font-semibold">Top Skills</h3>
+          <div className="flex items-center gap-2 mb-2 md:mb-3">
+            <Award className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground" />
+            <h3 className="text-base md:text-lg font-semibold">Top Skills</h3>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 md:gap-2">
             {candidate.skills.map((skill, index) => (
-              <Badge key={index} variant="secondary" className="text-sm">
+              <Badge
+                key={index}
+                variant="secondary"
+                className="text-xs md:text-sm"
+              >
                 {skill}
               </Badge>
             ))}
@@ -151,15 +172,15 @@ export function CandidateDetail({
       {/* Recent Roles */}
       {candidate.roles && candidate.roles.length > 0 && (
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Briefcase className="h-5 w-5 text-muted-foreground" />
-            <h3 className="text-lg font-semibold">Recent Roles</h3>
+          <div className="flex items-center gap-2 mb-2 md:mb-3">
+            <Briefcase className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground" />
+            <h3 className="text-base md:text-lg font-semibold">Recent Roles</h3>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1.5 md:space-y-2">
             {candidate.roles.map((role, index) => (
               <div
                 key={index}
-                className="text-sm text-foreground bg-muted p-3 rounded-lg"
+                className="text-xs md:text-sm text-foreground bg-muted p-2 md:p-3 rounded-lg"
               >
                 • {role}
               </div>
@@ -171,15 +192,15 @@ export function CandidateDetail({
       {/* Education */}
       {candidate.education && candidate.education.length > 0 && (
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <GraduationCap className="h-5 w-5 text-muted-foreground" />
-            <h3 className="text-lg font-semibold">Education</h3>
+          <div className="flex items-center gap-2 mb-2 md:mb-3">
+            <GraduationCap className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground" />
+            <h3 className="text-base md:text-lg font-semibold">Education</h3>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1.5 md:space-y-2">
             {candidate.education.map((edu, index) => (
               <div
                 key={index}
-                className="text-sm text-foreground bg-muted p-3 rounded-lg"
+                className="text-xs md:text-sm text-foreground bg-muted p-2 md:p-3 rounded-lg"
               >
                 • {edu}
               </div>
@@ -191,13 +212,17 @@ export function CandidateDetail({
       {/* Industries */}
       {candidate.industries && candidate.industries.length > 0 && (
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Building2 className="h-5 w-5 text-muted-foreground" />
-            <h3 className="text-lg font-semibold">Industries</h3>
+          <div className="flex items-center gap-2 mb-2 md:mb-3">
+            <Building2 className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground" />
+            <h3 className="text-base md:text-lg font-semibold">Industries</h3>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 md:gap-2">
             {candidate.industries.map((industry, index) => (
-              <Badge key={index} variant="outline" className="text-sm">
+              <Badge
+                key={index}
+                variant="outline"
+                className="text-xs md:text-sm"
+              >
                 {industry}
               </Badge>
             ))}
@@ -208,13 +233,17 @@ export function CandidateDetail({
       {/* Languages */}
       {candidate.languages && candidate.languages.length > 0 && (
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Globe className="h-5 w-5 text-muted-foreground" />
-            <h3 className="text-lg font-semibold">Languages</h3>
+          <div className="flex items-center gap-2 mb-2 md:mb-3">
+            <Globe className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground" />
+            <h3 className="text-base md:text-lg font-semibold">Languages</h3>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 md:gap-2">
             {candidate.languages.map((lang, index) => (
-              <Badge key={index} variant="secondary" className="text-sm">
+              <Badge
+                key={index}
+                variant="secondary"
+                className="text-xs md:text-sm"
+              >
                 {lang.charAt(0).toUpperCase() + lang.slice(1)}
               </Badge>
             ))}
@@ -225,17 +254,17 @@ export function CandidateDetail({
       {/* Certifications */}
       {candidate.certifications && candidate.certifications.length > 0 && (
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Award className="h-5 w-5 text-muted-foreground" />
-            <h3 className="text-lg font-semibold">
+          <div className="flex items-center gap-2 mb-2 md:mb-3">
+            <Award className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground" />
+            <h3 className="text-base md:text-lg font-semibold">
               Certifications ({candidate.certifications.length})
             </h3>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1.5 md:space-y-2">
             {candidate.certifications.map((cert, index) => (
               <div
                 key={index}
-                className="text-sm text-foreground bg-muted p-3 rounded-lg"
+                className="text-xs md:text-sm text-foreground bg-muted p-2 md:p-3 rounded-lg"
               >
                 • {cert}
               </div>

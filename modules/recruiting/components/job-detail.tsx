@@ -70,7 +70,7 @@ export function JobDetail({ jobId }: JobDetailProps) {
 
   if (error || !job) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      <div>
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="text-center py-12">
             <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -89,7 +89,7 @@ export function JobDetail({ jobId }: JobDetailProps) {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <main>
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Header */}
         <div className="flex items-start justify-between mb-8">
@@ -131,34 +131,67 @@ export function JobDetail({ jobId }: JobDetailProps) {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid grid-cols-6 h-auto mb-6 w-full">
-            <TabsTrigger value="job-details" className="gap-2">
+            <TabsTrigger
+              value="job-details"
+              className="flex-col md:flex-row gap-1 md:gap-2 py-2 md:py-1"
+            >
               <FileText className="h-4 w-4" />
-              Job Details
+              <span className="text-xs md:text-sm hidden md:inline">
+                Job Details
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="conversion-funnel" className="gap-2">
+            <TabsTrigger
+              value="conversion-funnel"
+              className="flex-col md:flex-row gap-1 md:gap-2 py-2 md:py-1"
+            >
               <TrendingUp className="h-4 w-4" />
-              Conversion Funnel
+              <span className="text-xs md:text-sm hidden md:inline">
+                Conversion Funnel
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="applicants" className="gap-2">
+            <TabsTrigger
+              value="applicants"
+              className="flex-col md:flex-row gap-1 md:gap-2 py-2 md:py-1"
+            >
               <Users className="h-4 w-4" />
-              Applicants
+              <span className="text-xs md:text-sm hidden md:inline">
+                Applicants
+              </span>
               {!analyticsLoading && applicants.length > 0 && (
-                <Badge variant="secondary" className="ml-1">
+                <Badge
+                  variant="secondary"
+                  className="ml-0 md:ml-1 text-[10px] md:text-xs hidden md:inline-flex"
+                >
                   {applicants.length}
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="attachments" className="gap-2">
+            <TabsTrigger
+              value="attachments"
+              className="flex-col md:flex-row gap-1 md:gap-2 py-2 md:py-1"
+            >
               <Paperclip className="h-4 w-4" />
-              Attachments
+              <span className="text-xs md:text-sm hidden md:inline">
+                Attachments
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="activities" className="gap-2">
+            <TabsTrigger
+              value="activities"
+              className="flex-col md:flex-row gap-1 md:gap-2 py-2 md:py-1"
+            >
               <Activity className="h-4 w-4" />
-              Activities
+              <span className="text-xs md:text-sm hidden md:inline">
+                Activities
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="ai-recommendations" className="gap-2">
+            <TabsTrigger
+              value="ai-recommendations"
+              className="flex-col md:flex-row gap-1 md:gap-2 py-2 md:py-1"
+            >
               <Sparkles className="h-4 w-4" />
-              AI Recommendations
+              <span className="text-xs md:text-sm hidden md:inline">
+                AI Recommendations
+              </span>
             </TabsTrigger>
           </TabsList>
 

@@ -92,79 +92,79 @@ export function RecruitingDashboard() {
 
   return (
     <>
-      <main className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-        <div className="max-w-7xl mx-auto px-6 py-12">
+      <main>
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-12">
           {/* Header */}
-          <div className="flex items-start justify-between">
-            <div className="mb-8">
-              <h1 className="text-4xl font-semibold tracking-tight mb-2">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6 md:mb-8">
+            <div>
+              <h1 className="text-2xl md:text-4xl font-semibold tracking-tight mb-1 md:mb-2">
                 Recruiting Dashboard
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-sm md:text-base text-muted-foreground">
                 Manage your job orders and track candidate pipeline
               </p>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => router.push("/apps")}
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Back to Assistant Selection
-            </Button>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div className="bg-card rounded-lg border p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                  <Briefcase className="h-6 w-6 text-blue-500" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
+            <div className="bg-card rounded-lg border p-4 md:p-6 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                  <Briefcase className="h-5 w-5 md:h-6 md:w-6 text-blue-500" />
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Jobs</p>
+                <div className="min-w-0">
+                  <p className="text-xs md:text-sm text-muted-foreground">
+                    Total Jobs
+                  </p>
                   {isFetching ? (
-                    <Skeleton className="h-8 w-16 mt-1" />
+                    <Skeleton className="h-6 md:h-8 w-12 md:w-16 mt-1" />
                   ) : (
-                    <p className="text-2xl font-bold">{stats.total}</p>
+                    <p className="text-xl md:text-2xl font-bold">
+                      {stats.total}
+                    </p>
                   )}
                 </div>
               </div>
             </div>
 
-            <div className="bg-card rounded-lg border p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-green-500/10 flex items-center justify-center">
-                  <TrendingUp className="h-6 w-6 text-green-500" />
+            <div className="bg-card rounded-lg border p-4 md:p-6 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-green-500/10 flex items-center justify-center flex-shrink-0">
+                  <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-green-500" />
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Active Jobs</p>
+                <div className="min-w-0">
+                  <p className="text-xs md:text-sm text-muted-foreground">
+                    Active Jobs
+                  </p>
                   {isFetching ? (
-                    <Skeleton className="h-8 w-16 mt-1" />
+                    <Skeleton className="h-6 md:h-8 w-12 md:w-16 mt-1" />
                   ) : (
-                    <p className="text-2xl font-bold">{stats.active}</p>
+                    <p className="text-xl md:text-2xl font-bold">
+                      {stats.active}
+                    </p>
                   )}
                 </div>
               </div>
             </div>
 
-            <div className="bg-card rounded-lg border p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                  <Users className="h-6 w-6 text-purple-500" />
+            <div className="bg-card rounded-lg border p-4 md:p-6 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-purple-500/10 flex items-center justify-center flex-shrink-0">
+                  <Users className="h-5 w-5 md:h-6 md:w-6 text-purple-500" />
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs md:text-sm text-muted-foreground">
                     Latest Candidates
                   </p>
                   {isCandidatesLoading ? (
-                    <Skeleton className="h-8 w-16 mt-1" />
+                    <Skeleton className="h-6 md:h-8 w-12 md:w-16 mt-1" />
                   ) : (
-                    <div className="flex items-baseline gap-2">
-                      <p className="text-2xl font-bold">
+                    <div className="flex items-baseline gap-1.5 md:gap-2">
+                      <p className="text-xl md:text-2xl font-bold">
                         {stats.latestCandidates}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-[10px] md:text-xs text-muted-foreground whitespace-nowrap">
                         last {windowDays} days
                       </p>
                     </div>
@@ -173,19 +173,21 @@ export function RecruitingDashboard() {
               </div>
             </div>
 
-            <div className="bg-card rounded-lg border p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                  <Clock className="h-6 w-6 text-orange-500" />
+            <div className="bg-card rounded-lg border p-4 md:p-6 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-orange-500/10 flex items-center justify-center flex-shrink-0">
+                  <Clock className="h-5 w-5 md:h-6 md:w-6 text-orange-500" />
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">
+                <div className="min-w-0">
+                  <p className="text-xs md:text-sm text-muted-foreground">
                     Recent Activity
                   </p>
                   {isFetching ? (
-                    <Skeleton className="h-8 w-16 mt-1" />
+                    <Skeleton className="h-6 md:h-8 w-12 md:w-16 mt-1" />
                   ) : (
-                    <p className="text-2xl font-bold">{stats.recentActivity}</p>
+                    <p className="text-xl md:text-2xl font-bold">
+                      {stats.recentActivity}
+                    </p>
                   )}
                 </div>
               </div>
