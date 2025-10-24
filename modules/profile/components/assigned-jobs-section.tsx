@@ -14,7 +14,7 @@ export function AssignedJobsSection() {
 
   if (isLoading) {
     return (
-      <Card className="p-6">
+      <Card className="p-6 shadow-none">
         <div className="space-y-4">
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-4 w-full" />
@@ -29,7 +29,7 @@ export function AssignedJobsSection() {
   }
 
   return (
-    <Card className="p-6">
+    <Card className="p-6 shadow-none">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>

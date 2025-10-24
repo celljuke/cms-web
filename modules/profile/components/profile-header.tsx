@@ -16,7 +16,7 @@ interface ProfileHeaderProps {
 export function ProfileHeader({ profile, isLoading }: ProfileHeaderProps) {
   if (isLoading) {
     return (
-      <Card className="p-6">
+      <Card className="p-6 shadow-none">
         <div className="flex items-start gap-6">
           <Skeleton className="h-24 w-24 rounded-full" />
           <div className="flex-1 space-y-3">
@@ -42,7 +42,7 @@ export function ProfileHeader({ profile, isLoading }: ProfileHeaderProps) {
       : profile.email.substring(0, 2).toUpperCase();
 
   return (
-    <Card className="p-6">
+    <Card className="p-6 shadow-none">
       <div className="flex flex-col sm:flex-row items-start gap-6">
         <div className="relative">
           <Avatar className="h-24 w-24 border-2 border-primary/10">

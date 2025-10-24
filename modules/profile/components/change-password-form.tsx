@@ -39,7 +39,7 @@ export function ChangePasswordForm() {
   };
 
   return (
-    <Card className="p-6">
+    <Card className="p-6 shadow-none">
       <div className="space-y-6">
         <div className="flex items-center gap-2">
           <Key className="h-5 w-5 text-primary" />

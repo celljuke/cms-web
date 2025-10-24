@@ -89,7 +89,17 @@ export function ProfileForm({ profile }: ProfileFormProps) {
     // Upload image
     const imageUrl = await uploadImage(file);
     if (imageUrl) {
+      // Update form field
       form.setValue("profile_image_url", imageUrl);
+
+      // Automatically save the profile with the new image
+      await updateProfile({
+        first_name: form.getValues("first_name"),
+        last_name: form.getValues("last_name"),
+        job_title: form.getValues("job_title") || undefined,
+        calendly_link: form.getValues("calendly_link") || undefined,
+        profile_image_url: imageUrl,
+      });
     }
   };
 
@@ -100,7 +110,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
     : "U";
 
   return (
-    <Card className="p-6">
+    <Card className="p-6 shadow-none">
       <div className="space-y-6">
         <div>
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">

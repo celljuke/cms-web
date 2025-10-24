@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { trpc } from "@/lib/trpc/client";
 
 /**
  * Hook for uploading profile image
@@ -9,6 +10,7 @@ import { toast } from "sonner";
  */
 export function useUploadImage() {
   const [isUploading, setIsUploading] = useState(false);
+  const utils = trpc.useUtils();
 
   const uploadImage = async (file: File): Promise<string | null> => {
     setIsUploading(true);
@@ -42,6 +44,10 @@ export function useUploadImage() {
 
       const data = await response.json();
       toast.success("Image uploaded successfully");
+
+      // Invalidate profile query to refetch and update all components
+      await utils.profile.getProfile.invalidate();
+
       return data.image_url;
     } catch (error) {
       toast.error(
