@@ -7,7 +7,7 @@ export default function NewJobPage() {
   const router = useRouter();
 
   const handleClose = () => {
-    router.push("/recruiting/dashboard");
+    router.push("/recruiting");
   };
 
   return (

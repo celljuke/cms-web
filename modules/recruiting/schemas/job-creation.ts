@@ -21,7 +21,7 @@ export const createJobSchema = z.object({
   department_id: z.number().optional(),
   contact_id: z.number().optional(),
   recruiter_id: z.number().min(1, "Recruiter is required"),
-  category: z.number().optional(),
+  category: z.string().optional().default(""),
   workflow_id: z.number().optional(),
 
   // Job Details

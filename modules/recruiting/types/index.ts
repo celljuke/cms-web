@@ -384,7 +384,7 @@ export interface CreateJobPayload {
   department_id?: number;
   contact_id?: number;
   workflow_id?: number;
-  category?: number;
+  category?: string;
 }
 
 export interface CreateJobResponse {

@@ -39,7 +39,7 @@ const companySchema = z.object({
   department_id: z.number().optional(),
   contact_id: z.number().optional(),
   recruiter_id: z.number().min(1, "Recruiter is required"),
-  category: z.number().optional(),
+  category: z.string().optional(),
   workflow_id: z.number().optional(),
 });
 
@@ -112,7 +112,7 @@ export function CompanyStep({ onValidationChange }: CompanyStepProps) {
       department_id: formData.department_id,
       contact_id: formData.contact_id,
       recruiter_id: formData.recruiter_id,
-      category: formData.category,
+      category: formData.category || "",
       workflow_id: formData.workflow_id,
     },
   });
@@ -153,7 +153,8 @@ export function CompanyStep({ onValidationChange }: CompanyStepProps) {
       }
 
       if (value.category) {
-        const category = CATEGORIES.find((c) => c.id === value.category);
+        const categoryId = parseInt(value.category);
+        const category = CATEGORIES.find((c) => c.id === categoryId);
         if (category) setReviewMetadata({ categoryName: category.name });
       }
     });
@@ -445,10 +446,8 @@ export function CompanyStep({ onValidationChange }: CompanyStepProps) {
                     <FormItem>
                       <FormLabel>Category</FormLabel>
                       <Select
-                        onValueChange={(value) =>
-                          field.onChange(parseInt(value, 10))
-                        }
-                        value={field.value?.toString()}
+                        onValueChange={field.onChange}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger className="w-full [&>span]:truncate">
