@@ -3,6 +3,7 @@
 import { Settings, LogOut, Moon, Sun, User, ExternalLink } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useAuth, useSignOut } from "@/modules/auth";
+import { useProfile } from "@/modules/profile";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -15,10 +16,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Notifications } from "./notifications";
 import { Logo } from "./logo";
+import Link from "next/link";
 
 export function Header() {
   const { theme, setTheme } = useTheme();
   const { user } = useAuth();
+  const { profile } = useProfile();
   const { handleSignOut } = useSignOut();
 
   return (
@@ -55,32 +58,41 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                 <Avatar>
-                  <AvatarImage src="/selcuk_photo.jpeg" alt="Profile" />
+                  <AvatarImage
+                    src={profile?.profile_image_url || undefined}
+                    alt={profile?.first_name || "Profile"}
+                  />
                   <AvatarFallback>
-                    {user?.email?.substring(0, 2).toUpperCase() || "SK"}
+                    {profile?.first_name && profile?.last_name
+                      ? `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase()
+                      : user?.email?.substring(0, 2).toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              {user && (
+              {(profile || user) && (
                 <>
                   <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
-                        {user.email.split("@")[0]}
+                        {profile?.first_name && profile?.last_name
+                          ? `${profile.first_name} ${profile.last_name}`
+                          : user?.email.split("@")[0] || "User"}
                       </p>
                       <p className="text-xs leading-none text-muted-foreground">
-                        {user.email}
+                        {profile?.email || user?.email}
                       </p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                 </>
               )}
-              <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
-                <span>Account</span>
+              <DropdownMenuItem asChild>
+                <Link href="/profile">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>My Profile</span>
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <ExternalLink className="mr-2 h-4 w-4" />
