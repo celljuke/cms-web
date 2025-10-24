@@ -265,3 +265,168 @@ export interface LatestCandidatesResponse {
   since: string;
   until: string;
 }
+
+// Job Creation Types
+export interface AvailableUser {
+  id: number;
+  name: string;
+  email: string;
+  job_title: string | null;
+  role: string;
+  profile_image_url: string | null;
+}
+
+export interface Workflow {
+  id: number;
+  title: string;
+  is_default: boolean;
+  date_modified: string;
+}
+
+export interface CompanySearchResult {
+  id: number;
+  owner_id: number;
+  name: string;
+  website: string | null;
+  address: {
+    street: string | null;
+    city: string | null;
+    state: string | null;
+    postal_code: string | null;
+  };
+  country_code: string | null;
+  phones: {
+    primary: string | null;
+    secondary: string | null;
+    fax: string | null;
+  };
+  entered_by_id: number;
+  social_media_urls: string[];
+  notes: string;
+  is_hot: boolean;
+  key_technologies: string;
+  billing_contact_id: number | null;
+  date_created: string;
+  date_modified: string;
+  status_id: number;
+  user_groups: string[];
+}
+
+export interface CompanyDepartment {
+  id: number;
+  name: string;
+  company_id: number;
+}
+
+export interface CompanyContact {
+  id: string;
+  first_name: string;
+  last_name: string;
+  title: string | null;
+  reports_to_id: number;
+  owner_id: number;
+  company_id: number;
+  emails: {
+    primary: string | null;
+    secondary: string | null;
+  };
+  phones: {
+    work: string | null;
+    cell: string | null;
+    other: string | null;
+  };
+  address: {
+    street: string | null;
+    city: string | null;
+    state: string | null;
+    postal_code: string | null;
+  };
+  country_code: string | null;
+  social_media_urls: string[];
+  is_hot: boolean;
+  has_left_company: boolean;
+  notes: string;
+  entered_by_id: number;
+  consent_status: string | null;
+  date_created: string;
+  date_modified: string;
+  status_id: number;
+}
+
+export interface CreateJobPayload {
+  title: string;
+  description: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  country_code: string;
+  company_id: number;
+  remote_type: string;
+  recruiter_id: number;
+  portal_id: string;
+  type: string;
+  is_hot: boolean;
+  start_date: string;
+  salary: string;
+  max_rate: string;
+  duration: string;
+  openings: number;
+  external_id: string;
+  company_job_id: string;
+  notes: string;
+  custom_fields: Array<{ id: string; value: string }>;
+  tags: string[];
+  user_groups: string[];
+  applications: Array<{ id: number }>;
+  job_close_schedule_time: string;
+  time_zone: string;
+  assigned_users: number[];
+  department_id?: number;
+  contact_id?: number;
+  workflow_id?: number;
+  category?: number;
+}
+
+export interface CreateJobResponse {
+  id: number;
+  title: string;
+  description: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  country_code: string;
+  company_id: number;
+  remote_type: string;
+  recruiter_id: number;
+  portal_id: string | null;
+  type: string;
+  is_hot: boolean;
+  start_date: string;
+  salary: string;
+  max_rate: string;
+  duration: string;
+  openings: number;
+  external_id: string;
+  company_job_id: string | null;
+  notes: string;
+  custom_fields: Array<{ id: string; value: string }>;
+  tags: string[];
+  user_groups: string[];
+  applications: Array<{ id: number }>;
+  job_close_schedule_time: string;
+  time_zone: string;
+  assigned_users: number[];
+  department_id: number | null;
+  contact_id: number | null;
+  workflow_id: number | null;
+  category: number | null;
+  status: string;
+  status_id: number | null;
+  owner_id: number | null;
+  cats_job_id: number | null;
+  published_at: string | null;
+  created_by: number;
+  reviewed_by: number | null;
+  created_at: string;
+  updated_at: string;
+}

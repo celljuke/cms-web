@@ -14,6 +14,13 @@ import type {
   JobRecommendationsResponse,
   SimilarCandidatesResponse,
   LatestCandidatesResponse,
+  AvailableUser,
+  Workflow,
+  CompanySearchResult,
+  CompanyDepartment,
+  CompanyContact,
+  CreateJobPayload,
+  CreateJobResponse,
 } from "@/modules/recruiting/types";
 
 const API_BASE_URL =
@@ -294,6 +301,173 @@ export class RecruitingService {
       const errorText = await response.text();
       throw new Error(
         `Failed to fetch latest candidates: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get available users (recruiters)
+   */
+  async getAvailableUsers(token: string): Promise<AvailableUser[]> {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/jobs/users/available`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch available users: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get workflows
+   */
+  async getWorkflows(token: string): Promise<Workflow[]> {
+    const response = await fetch(`${API_BASE_URL}/recruiting/cats/workflows`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch workflows: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Search companies
+   */
+  async searchCompanies(
+    query: string,
+    token: string
+  ): Promise<CompanySearchResult[]> {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/cats/companies?query=${encodeURIComponent(
+        query
+      )}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to search companies: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get company departments
+   */
+  async getCompanyDepartments(
+    companyId: number,
+    token: string
+  ): Promise<CompanyDepartment[]> {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/cats/departments/${companyId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch company departments: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get company contacts
+   */
+  async getCompanyContacts(
+    companyId: number,
+    token: string
+  ): Promise<CompanyContact[]> {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/cats/contacts/${companyId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch company contacts: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Create a new job
+   */
+  async createJob(
+    payload: CreateJobPayload,
+    token: string
+  ): Promise<CreateJobResponse> {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/jobs-submission/create`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to create job: ${response.status} ${response.statusText} - ${errorText}`
       );
     }
 

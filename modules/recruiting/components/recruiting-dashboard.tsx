@@ -20,6 +20,7 @@ import { JobsSkeleton } from "./jobs-skeleton";
 import { JobFilters } from "./job-filters";
 import { ViewSwitcher } from "./view-switcher";
 import { LatestCandidates } from "./latest-candidates";
+import { MethodSelection } from "./job-creation/method-selection";
 import type { Job } from "../types";
 import { useRouter } from "next/navigation";
 
@@ -29,6 +30,7 @@ export function RecruitingDashboard() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [view, setView] = useState<"card" | "list">("card");
   const [windowDays] = useState(2);
+  const [showMethodSelection, setShowMethodSelection] = useState(false);
 
   // Fetch jobs with tRPC
   const { data: jobs, isLoading: isFetching } =
@@ -78,187 +80,213 @@ export function RecruitingDashboard() {
 
   const router = useRouter();
 
+  const handleSelectMethod = (method: "existing" | "scratch") => {
+    setShowMethodSelection(false);
+    if (method === "scratch") {
+      router.push("/recruiting/jobs/new");
+    } else {
+      // TODO: Implement existing job registration flow
+      alert("Existing job registration coming soon!");
+    }
+  };
+
   return (
-    <main className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div className="mb-8">
-            <h1 className="text-4xl font-semibold tracking-tight mb-2">
-              Recruiting Dashboard
-            </h1>
-            <p className="text-muted-foreground">
-              Manage your job orders and track candidate pipeline
-            </p>
+    <>
+      <main className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          {/* Header */}
+          <div className="flex items-start justify-between">
+            <div className="mb-8">
+              <h1 className="text-4xl font-semibold tracking-tight mb-2">
+                Recruiting Dashboard
+              </h1>
+              <p className="text-muted-foreground">
+                Manage your job orders and track candidate pipeline
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push("/apps")}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Back to Assistant Selection
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push("/apps")}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Back to Assistant Selection
-          </Button>
-        </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-card rounded-lg border p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <Briefcase className="h-6 w-6 text-blue-500" />
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="bg-card rounded-lg border p-6 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                  <Briefcase className="h-6 w-6 text-blue-500" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Jobs</p>
+                  {isFetching ? (
+                    <Skeleton className="h-8 w-16 mt-1" />
+                  ) : (
+                    <p className="text-2xl font-bold">{stats.total}</p>
+                  )}
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total Jobs</p>
-                {isFetching ? (
-                  <Skeleton className="h-8 w-16 mt-1" />
-                ) : (
-                  <p className="text-2xl font-bold">{stats.total}</p>
-                )}
+            </div>
+
+            <div className="bg-card rounded-lg border p-6 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-green-500/10 flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-green-500" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Active Jobs</p>
+                  {isFetching ? (
+                    <Skeleton className="h-8 w-16 mt-1" />
+                  ) : (
+                    <p className="text-2xl font-bold">{stats.active}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-card rounded-lg border p-6 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                  <Users className="h-6 w-6 text-purple-500" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Latest Candidates
+                  </p>
+                  {isCandidatesLoading ? (
+                    <Skeleton className="h-8 w-16 mt-1" />
+                  ) : (
+                    <div className="flex items-baseline gap-2">
+                      <p className="text-2xl font-bold">
+                        {stats.latestCandidates}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        last {windowDays} days
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-card rounded-lg border p-6 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                  <Clock className="h-6 w-6 text-orange-500" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Recent Activity
+                  </p>
+                  {isFetching ? (
+                    <Skeleton className="h-8 w-16 mt-1" />
+                  ) : (
+                    <p className="text-2xl font-bold">{stats.recentActivity}</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-card rounded-lg border p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-lg bg-green-500/10 flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-green-500" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Active Jobs</p>
-                {isFetching ? (
-                  <Skeleton className="h-8 w-16 mt-1" />
-                ) : (
-                  <p className="text-2xl font-bold">{stats.active}</p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-card rounded-lg border p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                <Users className="h-6 w-6 text-purple-500" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">
+          {/* Tabs */}
+          <Tabs value={tab} onValueChange={setTab}>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <TabsList className="grid grid-cols-2 h-auto">
+                <TabsTrigger value="jobs" className="gap-2">
+                  <Briefcase className="h-4 w-4" />
+                  Jobs
+                  {stats.total > 0 && (
+                    <Badge variant="secondary" className="ml-1">
+                      {stats.total}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="candidates" className="gap-2">
+                  <Users className="h-4 w-4" />
                   Latest Candidates
-                </p>
-                {isCandidatesLoading ? (
-                  <Skeleton className="h-8 w-16 mt-1" />
-                ) : (
-                  <div className="flex items-baseline gap-2">
-                    <p className="text-2xl font-bold">
-                      {stats.latestCandidates}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      last {windowDays} days
-                    </p>
+                </TabsTrigger>
+              </TabsList>
+
+              {tab === "jobs" && (
+                <Button
+                  className="gap-2"
+                  onClick={() => setShowMethodSelection(true)}
+                >
+                  <PlusIcon className="h-4 w-4" />
+                  Create New Job
+                </Button>
+              )}
+            </div>
+
+            <TabsContent value="jobs" className="mt-6">
+              {/* Filters and View Switcher */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <div className="flex-1 w-full sm:w-auto">
+                  <JobFilters
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                    statusFilter={statusFilter}
+                    onStatusChange={setStatusFilter}
+                  />
+                </div>
+                <ViewSwitcher view={view} onViewChange={setView} />
+              </div>
+
+              {/* Jobs List */}
+              {isFetching ? (
+                <JobsSkeleton />
+              ) : filteredJobs && filteredJobs.length > 0 ? (
+                view === "card" ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredJobs.map((job: Job) => (
+                      <JobCard key={job.job_id} job={job} />
+                    ))}
                   </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-card rounded-lg border p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                <Clock className="h-6 w-6 text-orange-500" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Recent Activity</p>
-                {isFetching ? (
-                  <Skeleton className="h-8 w-16 mt-1" />
                 ) : (
-                  <p className="text-2xl font-bold">{stats.recentActivity}</p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <Tabs value={tab} onValueChange={setTab}>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <TabsList className="grid grid-cols-2 h-auto">
-              <TabsTrigger value="jobs" className="gap-2">
-                <Briefcase className="h-4 w-4" />
-                Jobs
-                {stats.total > 0 && (
-                  <Badge variant="secondary" className="ml-1">
-                    {stats.total}
-                  </Badge>
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="candidates" className="gap-2">
-                <Users className="h-4 w-4" />
-                Latest Candidates
-              </TabsTrigger>
-            </TabsList>
-
-            {tab === "jobs" && (
-              <Button className="gap-2">
-                <PlusIcon className="h-4 w-4" />
-                Create New Job
-              </Button>
-            )}
-          </div>
-
-          <TabsContent value="jobs" className="mt-6">
-            {/* Filters and View Switcher */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-              <div className="flex-1 w-full sm:w-auto">
-                <JobFilters
-                  searchQuery={searchQuery}
-                  onSearchChange={setSearchQuery}
-                  statusFilter={statusFilter}
-                  onStatusChange={setStatusFilter}
-                />
-              </div>
-              <ViewSwitcher view={view} onViewChange={setView} />
-            </div>
-
-            {/* Jobs List */}
-            {isFetching ? (
-              <JobsSkeleton />
-            ) : filteredJobs && filteredJobs.length > 0 ? (
-              view === "card" ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredJobs.map((job: Job) => (
-                    <JobCard key={job.job_id} job={job} />
-                  ))}
-                </div>
+                  <div className="space-y-2">
+                    {filteredJobs.map((job: Job) => (
+                      <JobListItem key={job.job_id} job={job} />
+                    ))}
+                  </div>
+                )
               ) : (
-                <div className="space-y-2">
-                  {filteredJobs.map((job: Job) => (
-                    <JobListItem key={job.job_id} job={job} />
-                  ))}
+                <div className="text-center py-12">
+                  <Briefcase className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No jobs found</h3>
+                  <p className="text-muted-foreground mb-4">
+                    {searchQuery || statusFilter !== "all"
+                      ? "Try adjusting your filters"
+                      : "Get started by creating your first job"}
+                  </p>
+                  {!searchQuery && statusFilter === "all" && (
+                    <Button
+                      className="gap-2"
+                      onClick={() => setShowMethodSelection(true)}
+                    >
+                      <PlusIcon className="h-4 w-4" />
+                      Create New Job
+                    </Button>
+                  )}
                 </div>
-              )
-            ) : (
-              <div className="text-center py-12">
-                <Briefcase className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No jobs found</h3>
-                <p className="text-muted-foreground mb-4">
-                  {searchQuery || statusFilter !== "all"
-                    ? "Try adjusting your filters"
-                    : "Get started by creating your first job"}
-                </p>
-                {!searchQuery && statusFilter === "all" && (
-                  <Button className="gap-2">
-                    <PlusIcon className="h-4 w-4" />
-                    Create New Job
-                  </Button>
-                )}
-              </div>
-            )}
-          </TabsContent>
+              )}
+            </TabsContent>
 
-          <TabsContent value="candidates" className="mt-6">
-            <LatestCandidates />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </main>
+            <TabsContent value="candidates" className="mt-6">
+              <LatestCandidates />
+            </TabsContent>
+          </Tabs>
+        </div>
+      </main>
+
+      <MethodSelection
+        open={showMethodSelection}
+        onOpenChange={setShowMethodSelection}
+        onSelectMethod={handleSelectMethod}
+      />
+    </>
   );
 }

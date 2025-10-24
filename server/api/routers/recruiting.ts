@@ -1,6 +1,7 @@
 import { recruitingService } from "@/server/services/recruiting";
 import { protectedProcedure, router } from "../trpc";
 import { z } from "zod";
+import { createJobSchema } from "@/modules/recruiting/schemas/job-creation";
 
 export const recruitingRouter = router({
   getJobs: protectedProcedure.query(({ ctx }) => {
@@ -123,5 +124,53 @@ export const recruitingRouter = router({
         input.windowDays,
         ctx.token
       );
+    }),
+
+  // Job Creation Endpoints
+  getAvailableUsers: protectedProcedure.query(({ ctx }) => {
+    return recruitingService.getAvailableUsers(ctx.token);
+  }),
+
+  getWorkflows: protectedProcedure.query(({ ctx }) => {
+    return recruitingService.getWorkflows(ctx.token);
+  }),
+
+  searchCompanies: protectedProcedure
+    .input(
+      z.object({
+        query: z.string().min(1),
+      })
+    )
+    .query(({ input, ctx }) => {
+      return recruitingService.searchCompanies(input.query, ctx.token);
+    }),
+
+  getCompanyDepartments: protectedProcedure
+    .input(
+      z.object({
+        companyId: z.number(),
+      })
+    )
+    .query(({ input, ctx }) => {
+      return recruitingService.getCompanyDepartments(
+        input.companyId,
+        ctx.token
+      );
+    }),
+
+  getCompanyContacts: protectedProcedure
+    .input(
+      z.object({
+        companyId: z.number(),
+      })
+    )
+    .query(({ input, ctx }) => {
+      return recruitingService.getCompanyContacts(input.companyId, ctx.token);
+    }),
+
+  createJob: protectedProcedure
+    .input(createJobSchema)
+    .mutation(({ input, ctx }) => {
+      return recruitingService.createJob(input, ctx.token);
     }),
 });
