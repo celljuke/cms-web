@@ -24,6 +24,7 @@ import { JobDetailLoading } from "./job-detail-loading";
 import { ApplicantsTab } from "./applicants-tab";
 import { ActivitiesTab } from "./activities-tab";
 import { AttachmentsTab } from "./attachments-tab";
+import { RecommendationsTab } from "./recommendations-tab";
 
 interface JobDetailProps {
   jobId: number;
@@ -248,19 +249,9 @@ export function JobDetail({ jobId }: JobDetailProps) {
             <ActivitiesTab jobId={jobId} />
           </TabsContent>
 
-          {/* AI Recommendations Tab - Placeholder */}
+          {/* AI Recommendations Tab */}
           <TabsContent value="ai-recommendations">
-            <Card className="hover:shadow-md transition-shadow">
-              <CardContent className="p-12 text-center">
-                <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
-                  AI Recommendations Coming Soon
-                </h3>
-                <p className="text-muted-foreground">
-                  Get AI-powered insights and candidate recommendations
-                </p>
-              </CardContent>
-            </Card>
+            <RecommendationsTab jobId={jobId} />
           </TabsContent>
         </Tabs>
       </div>

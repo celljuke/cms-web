@@ -196,3 +196,52 @@ export interface JobAttachment {
 export interface JobAttachmentsResponse {
   attachments: JobAttachment[];
 }
+
+export interface RecommendedCandidate {
+  id: string;
+  score: number;
+  name: string;
+  email: string;
+  city: string;
+  state: string;
+  skills: string[];
+  languages: string[];
+  experience_years: number;
+  roles: string[];
+  education: string[];
+  certifications: string[];
+  industries: string[];
+}
+
+export interface JobRecommendationsResponse {
+  job_id: number;
+  job_title: string;
+  job_description: string;
+  candidates: RecommendedCandidate[];
+  search_method: string;
+  total_found: number;
+}
+
+export interface SimilarCandidate {
+  id: string;
+  score: number;
+  name: string;
+  email: string;
+  city: string;
+  state: string;
+  skills: string[];
+  languages: string[];
+  experience_years: number;
+  roles: string[];
+  education: string[];
+  certifications: string[];
+  industries: string[];
+}
+
+export interface SimilarCandidatesResponse {
+  source_candidate_id: string;
+  source_candidate_name: string;
+  similar_candidates: SimilarCandidate[];
+  search_method: string;
+  total_found: number;
+}

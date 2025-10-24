@@ -79,4 +79,34 @@ export const recruitingRouter = router({
         ctx.token
       );
     }),
+
+  getJobRecommendations: protectedProcedure
+    .input(
+      z.object({
+        jobId: z.number(),
+        topK: z.number().default(50),
+      })
+    )
+    .query(({ input, ctx }) => {
+      return recruitingService.getJobRecommendations(
+        input.jobId,
+        input.topK,
+        ctx.token
+      );
+    }),
+
+  getSimilarCandidates: protectedProcedure
+    .input(
+      z.object({
+        candidateId: z.string(),
+        topK: z.number().default(50),
+      })
+    )
+    .query(({ input, ctx }) => {
+      return recruitingService.getSimilarCandidates(
+        input.candidateId,
+        input.topK,
+        ctx.token
+      );
+    }),
 });

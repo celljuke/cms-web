@@ -11,6 +11,8 @@ import type {
   JobActivitiesResponse,
   ActivityUser,
   JobAttachmentsResponse,
+  JobRecommendationsResponse,
+  SimilarCandidatesResponse,
 } from "@/modules/recruiting/types";
 
 const API_BASE_URL =
@@ -201,6 +203,66 @@ export class RecruitingService {
       const errorText = await response.text();
       throw new Error(
         `Failed to fetch attachments: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get AI-powered job recommendations
+   */
+  async getJobRecommendations(
+    jobId: number,
+    topK: number,
+    token: string
+  ): Promise<JobRecommendationsResponse> {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/candidate-matching/job/${jobId}/candidates?top_k=${topK}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch job recommendations: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get similar candidates for a given candidate
+   */
+  async getSimilarCandidates(
+    candidateId: string,
+    topK: number,
+    token: string
+  ): Promise<SimilarCandidatesResponse> {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/candidate-matching/candidate/${candidateId}/similar?top_k=${topK}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch similar candidates: ${response.status} ${response.statusText} - ${errorText}`
       );
     }
 
