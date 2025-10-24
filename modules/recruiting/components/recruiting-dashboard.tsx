@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc/client";
+import { Skeleton } from "@/components/ui/skeleton";
 import { JobCard } from "./job-card";
 import { JobListItem } from "./job-list-item";
 import { JobsSkeleton } from "./jobs-skeleton";
@@ -27,10 +28,18 @@ export function RecruitingDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [view, setView] = useState<"card" | "list">("card");
+  const [windowDays] = useState(2);
 
   // Fetch jobs with tRPC
   const { data: jobs, isLoading: isFetching } =
     trpc.recruiting.getJobs.useQuery();
+
+  // Fetch latest candidates for stats
+  const { data: candidatesData, isLoading: isCandidatesLoading } =
+    trpc.recruiting.getLatestCandidates.useQuery({
+      limit: 50,
+      windowDays,
+    });
 
   // Filter jobs based on search and status
   const filteredJobs = jobs?.filter((job: Job) => {
@@ -55,7 +64,7 @@ export function RecruitingDashboard() {
     active:
       jobs?.filter((j: Job) => j.is_active && j.status === "Active").length ||
       0,
-    candidates: 0, // This would come from another API
+    latestCandidates: candidatesData?.count || 0,
     recentActivity:
       jobs?.filter((j: Job) => {
         if (!j.updated_at) return false;
@@ -101,7 +110,11 @@ export function RecruitingDashboard() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Jobs</p>
-                <p className="text-2xl font-bold">{stats.total}</p>
+                {isFetching ? (
+                  <Skeleton className="h-8 w-16 mt-1" />
+                ) : (
+                  <p className="text-2xl font-bold">{stats.total}</p>
+                )}
               </div>
             </div>
           </div>
@@ -113,7 +126,11 @@ export function RecruitingDashboard() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Active Jobs</p>
-                <p className="text-2xl font-bold">{stats.active}</p>
+                {isFetching ? (
+                  <Skeleton className="h-8 w-16 mt-1" />
+                ) : (
+                  <p className="text-2xl font-bold">{stats.active}</p>
+                )}
               </div>
             </div>
           </div>
@@ -124,8 +141,21 @@ export function RecruitingDashboard() {
                 <Users className="h-6 w-6 text-purple-500" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Candidates</p>
-                <p className="text-2xl font-bold">{stats.candidates}</p>
+                <p className="text-sm text-muted-foreground">
+                  Latest Candidates
+                </p>
+                {isCandidatesLoading ? (
+                  <Skeleton className="h-8 w-16 mt-1" />
+                ) : (
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-2xl font-bold">
+                      {stats.latestCandidates}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      last {windowDays} days
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -137,7 +167,11 @@ export function RecruitingDashboard() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Recent Activity</p>
-                <p className="text-2xl font-bold">{stats.recentActivity}</p>
+                {isFetching ? (
+                  <Skeleton className="h-8 w-16 mt-1" />
+                ) : (
+                  <p className="text-2xl font-bold">{stats.recentActivity}</p>
+                )}
               </div>
             </div>
           </div>
