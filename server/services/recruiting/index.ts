@@ -8,6 +8,8 @@ import type {
   JobDetail,
   JobAnalyticsResponse,
   CandidateActivitiesResponse,
+  JobActivitiesResponse,
+  ActivityUser,
 } from "@/modules/recruiting/types";
 
 const API_BASE_URL =
@@ -112,6 +114,61 @@ export class RecruitingService {
       const errorText = await response.text();
       throw new Error(
         `Failed to fetch candidate activities: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get job activities
+   */
+  async getJobActivities(
+    jobId: number,
+    token: string
+  ): Promise<JobActivitiesResponse> {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/jobs-submission/${jobId}/activities/true`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch job activities: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get user information by ID
+   */
+  async getActivityUser(userId: number, token: string): Promise<ActivityUser> {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/jobs-submission/user/${userId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch user: ${response.status} ${response.statusText} - ${errorText}`
       );
     }
 

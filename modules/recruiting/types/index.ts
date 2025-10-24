@@ -154,3 +154,35 @@ export interface CandidateActivity {
 export interface CandidateActivitiesResponse {
   activities: CandidateActivity[];
 }
+
+export interface JobActivity {
+  id: number;
+  data_item: {
+    id: number;
+    type: string;
+  };
+  date: string;
+  regarding_id: number;
+  type: string;
+  notes: string | null;
+  annotation: string | null;
+  entered_by_id: number;
+  date_created: string;
+  date_modified: string;
+}
+
+export interface JobActivitiesResponse {
+  activities: JobActivity[];
+}
+
+export interface ActivityUser {
+  id: number;
+  username: string;
+  first_name: string;
+  last_name: string;
+  title: string | null;
+  _links?: {
+    self: { href: string };
+    phones: { href: string };
+  };
+}

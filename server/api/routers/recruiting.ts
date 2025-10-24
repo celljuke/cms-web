@@ -39,4 +39,24 @@ export const recruitingRouter = router({
         ctx.token
       );
     }),
+
+  getJobActivities: protectedProcedure
+    .input(
+      z.object({
+        jobId: z.number(),
+      })
+    )
+    .query(({ input, ctx }) => {
+      return recruitingService.getJobActivities(input.jobId, ctx.token);
+    }),
+
+  getActivityUser: protectedProcedure
+    .input(
+      z.object({
+        userId: z.number(),
+      })
+    )
+    .query(({ input, ctx }) => {
+      return recruitingService.getActivityUser(input.userId, ctx.token);
+    }),
 });

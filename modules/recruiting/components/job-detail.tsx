@@ -22,6 +22,7 @@ import { JobDetailsTab } from "./job-details-tab";
 import { ConversionFunnel } from "./conversion-funnel";
 import { JobDetailLoading } from "./job-detail-loading";
 import { ApplicantsTab } from "./applicants-tab";
+import { ActivitiesTab } from "./activities-tab";
 
 interface JobDetailProps {
   jobId: number;
@@ -251,19 +252,9 @@ export function JobDetail({ jobId }: JobDetailProps) {
             </Card>
           </TabsContent>
 
-          {/* Activities Tab - Placeholder */}
+          {/* Activities Tab */}
           <TabsContent value="activities">
-            <Card className="hover:shadow-md transition-shadow">
-              <CardContent className="p-12 text-center">
-                <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
-                  Activities Coming Soon
-                </h3>
-                <p className="text-muted-foreground">
-                  View activity history and timeline for this job
-                </p>
-              </CardContent>
-            </Card>
+            <ActivitiesTab jobId={jobId} />
           </TabsContent>
 
           {/* AI Recommendations Tab - Placeholder */}
