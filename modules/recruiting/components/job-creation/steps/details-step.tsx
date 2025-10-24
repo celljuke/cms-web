@@ -16,6 +16,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { DatePicker } from "@/components/ui/date-picker";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useJobCreationStore } from "../../../stores/job-creation-store";
 import { useEffect } from "react";
 import { format } from "date-fns";
@@ -26,7 +34,17 @@ const detailsSchema = z.object({
   max_rate: z.string().optional(),
   duration: z.string().optional(),
   notes: z.string().optional(),
+  auto_close_enabled: z.boolean().optional(),
+  auto_close_datetime: z.date().optional(),
+  time_zone: z.string().optional(),
 });
+
+const TIMEZONES = [
+  "Pacific Standard Time (PST)",
+  "Mountain Standard Time (MST)",
+  "Central Standard Time (CST)",
+  "Eastern Standard Time (EST)",
+];
 
 type DetailsFormData = z.infer<typeof detailsSchema>;
 
@@ -37,6 +55,11 @@ interface DetailsStepProps {
 export function DetailsStep({ onValidationChange }: DetailsStepProps) {
   const { formData, updateFormData } = useJobCreationStore();
 
+  // Parse existing datetime if available
+  const existingDateTime = formData.job_close_schedule_time
+    ? new Date(formData.job_close_schedule_time)
+    : undefined;
+
   const form = useForm<DetailsFormData>({
     resolver: zodResolver(detailsSchema),
     defaultValues: {
@@ -45,14 +68,27 @@ export function DetailsStep({ onValidationChange }: DetailsStepProps) {
       max_rate: formData.max_rate || "",
       duration: formData.duration || "",
       notes: formData.notes || "",
+      auto_close_enabled: Boolean(formData.job_close_schedule_time),
+      auto_close_datetime: existingDateTime,
+      time_zone: formData.time_zone || "",
     },
   });
 
   const { watch, formState } = form;
+  const autoCloseEnabled = form.watch("auto_close_enabled");
 
   useEffect(() => {
     const subscription = watch((value) => {
-      updateFormData(value as Partial<DetailsFormData>);
+      // Convert auto_close_datetime to ISO string for job_close_schedule_time
+      const jobCloseScheduleTime = value.auto_close_datetime
+        ? value.auto_close_datetime.toISOString()
+        : "";
+
+      const processedValue = {
+        ...value,
+        job_close_schedule_time: jobCloseScheduleTime,
+      };
+      updateFormData(processedValue as any);
     });
     return () => subscription.unsubscribe();
   }, [watch, updateFormData]);
@@ -165,6 +201,92 @@ export function DetailsStep({ onValidationChange }: DetailsStepProps) {
                 </FormItem>
               )}
             />
+          </div>
+        </Card>
+
+        {/* Auto Close Job */}
+        <Card className="p-6 shadow-none">
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold">Auto Close Job</h3>
+              <p className="text-sm text-muted-foreground">
+                Automatically close this job at a scheduled time
+              </p>
+            </div>
+
+            <FormField
+              control={form.control}
+              name="auto_close_enabled"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>
+                      Automatically close job at scheduled time
+                    </FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            {autoCloseEnabled && (
+              <div className="space-y-4 pt-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="auto_close_datetime"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Schedule Close Date & Time</FormLabel>
+                        <FormControl>
+                          <DatePicker
+                            date={field.value}
+                            onSelect={field.onChange}
+                            placeholder="Select date and time"
+                            withTime
+                            disablePastDates
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="time_zone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Timezone</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select timezone" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {TIMEZONES.map((tz) => (
+                              <SelectItem key={tz} value={tz}>
+                                {tz}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </Card>
       </form>

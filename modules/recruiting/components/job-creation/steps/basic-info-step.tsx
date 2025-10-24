@@ -25,13 +25,13 @@ import { Switch } from "@/components/ui/switch";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DatePicker } from "@/components/ui/date-picker";
 import { useJobCreationStore } from "../../../stores/job-creation-store";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAvailableUsers } from "../../../hooks/use-available-users";
 import { Search, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { VList } from "virtua";
 
 const basicInfoSchema = z.object({
   title: z.string().min(1, "Job title is required"),
@@ -42,9 +42,6 @@ const basicInfoSchema = z.object({
   remote_type: z.string().optional(),
   is_hot: z.boolean(),
   recruiter_id: z.number().optional(),
-  auto_close_enabled: z.boolean().optional(),
-  auto_close_datetime: z.date().optional(),
-  time_zone: z.string().optional(),
 });
 
 type BasicInfoFormData = z.infer<typeof basicInfoSchema>;
@@ -61,26 +58,31 @@ const JOB_TYPES = [
 ] as const;
 const REMOTE_TYPES = ["COVID-19", "Fully remote", "WFH Flexible"];
 
-const TIMEZONES = [
-  "Pacific Standard Time (PST)",
-  "Mountain Standard Time (MST)",
-  "Central Standard Time (CST)",
-  "Eastern Standard Time (EST)",
-];
-
 export function BasicInfoStep({ onValidationChange }: BasicInfoStepProps) {
   const { formData, updateFormData } = useJobCreationStore();
   const [recruiterSearch, setRecruiterSearch] = useState("");
   const [selectedRecruiterId, setSelectedRecruiterId] = useState<
     number | undefined
   >(formData.recruiter_id);
+  const [showRecruitersList, setShowRecruitersList] = useState(false);
+  const recruitersListRef = useRef<HTMLDivElement>(null);
 
   const { data: users, isLoading: isUsersLoading } = useAvailableUsers();
 
-  // Parse existing datetime if available
-  const existingDateTime = formData.job_close_schedule_time
-    ? new Date(formData.job_close_schedule_time)
-    : undefined;
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        recruitersListRef.current &&
+        !recruitersListRef.current.contains(event.target as Node)
+      ) {
+        setShowRecruitersList(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const form = useForm<BasicInfoFormData>({
     resolver: zodResolver(basicInfoSchema),
@@ -93,13 +95,8 @@ export function BasicInfoStep({ onValidationChange }: BasicInfoStepProps) {
       remote_type: formData.remote_type || "none",
       is_hot: formData.is_hot || false,
       recruiter_id: formData.recruiter_id,
-      auto_close_enabled: Boolean(formData.job_close_schedule_time),
-      auto_close_datetime: existingDateTime,
-      time_zone: formData.time_zone || "",
     },
   });
-
-  const autoCloseEnabled = form.watch("auto_close_enabled");
 
   const filteredUsers = users?.filter((user) =>
     user.name.toLowerCase().includes(recruiterSearch.toLowerCase())
@@ -113,6 +110,7 @@ export function BasicInfoStep({ onValidationChange }: BasicInfoStepProps) {
     setSelectedRecruiterId(userId);
     form.setValue("recruiter_id", userId);
     setRecruiterSearch("");
+    setShowRecruitersList(false);
   };
 
   const handleRemoveRecruiter = () => {
@@ -125,15 +123,9 @@ export function BasicInfoStep({ onValidationChange }: BasicInfoStepProps) {
   useEffect(() => {
     const subscription = watch((value) => {
       // Convert "none" to empty string for remote_type
-      // Convert auto_close_datetime to ISO string for job_close_schedule_time
-      const jobCloseScheduleTime = value.auto_close_datetime
-        ? value.auto_close_datetime.toISOString()
-        : "";
-
       const processedValue = {
         ...value,
         remote_type: value.remote_type === "none" ? "" : value.remote_type,
-        job_close_schedule_time: jobCloseScheduleTime,
       };
       updateFormData(processedValue as any);
     });
@@ -332,18 +324,6 @@ export function BasicInfoStep({ onValidationChange }: BasicInfoStepProps) {
                 <FormItem>
                   <FormLabel>Assign Recruiter</FormLabel>
                   <div className="space-y-3">
-                    {!selectedRecruiter && (
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          placeholder="Search recruiters..."
-                          value={recruiterSearch}
-                          onChange={(e) => setRecruiterSearch(e.target.value)}
-                          className="pl-9"
-                        />
-                      </div>
-                    )}
-
                     {selectedRecruiter ? (
                       <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/50">
                         <Avatar className="h-10 w-10">
@@ -373,156 +353,87 @@ export function BasicInfoStep({ onValidationChange }: BasicInfoStepProps) {
                         </Button>
                       </div>
                     ) : (
-                      <>
-                        {isUsersLoading && recruiterSearch && (
-                          <div className="space-y-2">
-                            {[...Array(3)].map((_, i) => (
-                              <Skeleton key={i} className="h-16 w-full" />
-                            ))}
-                          </div>
-                        )}
+                      <div className="relative" ref={recruitersListRef}>
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            placeholder="Search recruiters..."
+                            value={recruiterSearch}
+                            onChange={(e) => setRecruiterSearch(e.target.value)}
+                            onFocus={() => setShowRecruitersList(true)}
+                            className="pl-9"
+                          />
+                        </div>
 
-                        {!isUsersLoading &&
-                          recruiterSearch &&
-                          filteredUsers &&
-                          filteredUsers.length > 0 && (
-                            <div className="space-y-2 max-h-[200px] overflow-y-auto border rounded-md">
-                              {filteredUsers.map((user) => (
-                                <button
-                                  key={user.id}
-                                  type="button"
-                                  onClick={() => handleSelectRecruiter(user.id)}
-                                  className="w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left"
-                                >
-                                  <Avatar className="h-10 w-10">
-                                    <AvatarFallback className="bg-primary/10 text-primary">
-                                      {user.name
-                                        .split(" ")
-                                        .map((n) => n[0])
-                                        .join("")
-                                        .toUpperCase()}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <div className="flex-1 min-w-0">
-                                    <div className="font-medium truncate">
-                                      {user.name}
-                                    </div>
-                                    <div className="text-sm text-muted-foreground truncate">
-                                      {user.email}
-                                    </div>
+                        {showRecruitersList && (
+                          <>
+                            {isUsersLoading ? (
+                              <div className="absolute z-50 w-full mt-2 border rounded-md bg-background shadow-lg">
+                                <div className="p-2 space-y-2">
+                                  {[...Array(3)].map((_, i) => (
+                                    <Skeleton key={i} className="h-16 w-full" />
+                                  ))}
+                                </div>
+                              </div>
+                            ) : filteredUsers && filteredUsers.length > 0 ? (
+                              <div className="absolute z-50 w-full mt-2 border rounded-md bg-background shadow-lg">
+                                <div className="p-1">
+                                  <VList style={{ height: "300px" }}>
+                                    {filteredUsers.map((user) => (
+                                      <button
+                                        key={user.id}
+                                        type="button"
+                                        onClick={() =>
+                                          handleSelectRecruiter(user.id)
+                                        }
+                                        className="w-full flex items-center gap-3 p-3 hover:bg-muted rounded-md transition-colors text-left"
+                                      >
+                                        <Avatar className="h-10 w-10">
+                                          <AvatarFallback className="bg-primary/10 text-primary">
+                                            {user.name
+                                              .split(" ")
+                                              .map((n) => n[0])
+                                              .join("")
+                                              .toUpperCase()}
+                                          </AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex-1 min-w-0">
+                                          <div className="font-medium truncate">
+                                            {user.name}
+                                          </div>
+                                          <div className="text-sm text-muted-foreground truncate">
+                                            {user.email}
+                                          </div>
+                                        </div>
+                                      </button>
+                                    ))}
+                                  </VList>
+                                </div>
+                                {recruiterSearch && (
+                                  <div className="border-t p-2 text-xs text-muted-foreground text-center">
+                                    Showing {filteredUsers.length} of{" "}
+                                    {users?.length || 0} recruiters
                                   </div>
-                                </button>
-                              ))}
-                            </div>
-                          )}
-
-                        {!isUsersLoading &&
-                          recruiterSearch &&
-                          filteredUsers &&
-                          filteredUsers.length === 0 && (
-                            <div className="text-center py-8 text-sm text-muted-foreground">
-                              No recruiters found
-                            </div>
-                          )}
-
-                        {!recruiterSearch && (
-                          <div className="text-center py-8 text-sm text-muted-foreground">
-                            No recruiter selected yet. Choose a recruiter from
-                            the search above.
-                          </div>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="absolute z-50 w-full mt-2 border rounded-md bg-background shadow-lg">
+                                <div className="text-center py-8 text-sm text-muted-foreground">
+                                  {recruiterSearch
+                                    ? "No recruiters found"
+                                    : "No recruiters available"}
+                                </div>
+                              </div>
+                            )}
+                          </>
                         )}
-                      </>
+                      </div>
                     )}
                   </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          </div>
-        </Card>
-
-        {/* Auto Close Job */}
-        <Card className="p-6 shadow-none">
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold">Auto Close Job</h3>
-              <p className="text-sm text-muted-foreground">
-                Automatically close this job at a scheduled time
-              </p>
-            </div>
-
-            <FormField
-              control={form.control}
-              name="auto_close_enabled"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>
-                      Automatically close job at scheduled time
-                    </FormLabel>
-                  </div>
-                </FormItem>
-              )}
-            />
-
-            {autoCloseEnabled && (
-              <div className="space-y-4 pt-2">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="auto_close_datetime"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Schedule Close Date & Time</FormLabel>
-                        <FormControl>
-                          <DatePicker
-                            date={field.value}
-                            onSelect={field.onChange}
-                            placeholder="Select date and time"
-                            withTime
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="time_zone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Timezone</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select timezone" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {TIMEZONES.map((tz) => (
-                              <SelectItem key={tz} value={tz}>
-                                {tz}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-            )}
           </div>
         </Card>
       </form>

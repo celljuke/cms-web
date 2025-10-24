@@ -14,7 +14,9 @@ import {
   FileText,
   Users,
   Tag,
+  Clock,
 } from "lucide-react";
+import { format } from "date-fns";
 
 interface ReviewStepProps {
   onValidationChange: (isValid: boolean) => void;
@@ -154,10 +156,11 @@ export function ReviewStep({ onValidationChange }: ReviewStepProps) {
       {(formData.start_date ||
         formData.salary ||
         formData.max_rate ||
-        formData.duration) && (
+        formData.duration ||
+        formData.job_close_schedule_time) && (
         <Card className="p-6 shadow-none">
           <div className="flex items-center gap-2 mb-4">
-            <DollarSign className="h-5 w-5 text-primary" />
+            <Calendar className="h-5 w-5 text-primary" />
             <h3 className="font-semibold">Job Details</h3>
           </div>
           <div className="space-y-3">
@@ -183,6 +186,35 @@ export function ReviewStep({ onValidationChange }: ReviewStepProps) {
               <div>
                 <div className="text-sm text-muted-foreground">Duration</div>
                 <div className="font-medium">{formData.duration}</div>
+              </div>
+            )}
+            {formData.job_close_schedule_time && (
+              <div className="pt-2 border-t">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="h-4 w-4 text-primary" />
+                  <div className="text-sm font-medium">Auto Close Job</div>
+                </div>
+                <div className="space-y-2 ml-6">
+                  <div>
+                    <div className="text-sm text-muted-foreground">
+                      Scheduled Close Date & Time
+                    </div>
+                    <div className="font-medium">
+                      {format(
+                        new Date(formData.job_close_schedule_time),
+                        "PPP 'at' p"
+                      )}
+                    </div>
+                  </div>
+                  {formData.time_zone && (
+                    <div>
+                      <div className="text-sm text-muted-foreground">
+                        Timezone
+                      </div>
+                      <Badge variant="outline">{formData.time_zone}</Badge>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
