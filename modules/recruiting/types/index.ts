@@ -245,3 +245,23 @@ export interface SimilarCandidatesResponse {
   search_method: string;
   total_found: number;
 }
+
+export interface LatestCandidate {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  city: string | null;
+  state: string | null;
+  address: string | null;
+  notes: string | null;
+  date_created: string;
+  date_modified: string;
+}
+
+export interface LatestCandidatesResponse {
+  candidates: LatestCandidate[];
+  count: number;
+  since: string;
+  until: string;
+}

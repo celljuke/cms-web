@@ -109,4 +109,19 @@ export const recruitingRouter = router({
         ctx.token
       );
     }),
+
+  getLatestCandidates: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().default(50),
+        windowDays: z.number().default(2),
+      })
+    )
+    .query(({ input, ctx }) => {
+      return recruitingService.getLatestCandidates(
+        input.limit,
+        input.windowDays,
+        ctx.token
+      );
+    }),
 });

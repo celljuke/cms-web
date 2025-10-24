@@ -18,6 +18,7 @@ import { JobListItem } from "./job-list-item";
 import { JobsSkeleton } from "./jobs-skeleton";
 import { JobFilters } from "./job-filters";
 import { ViewSwitcher } from "./view-switcher";
+import { LatestCandidates } from "./latest-candidates";
 import type { Job } from "../types";
 import { useRouter } from "next/navigation";
 
@@ -219,16 +220,8 @@ export function RecruitingDashboard() {
             )}
           </TabsContent>
 
-          <TabsContent value="candidates">
-            <div className="text-center py-12">
-              <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">
-                Candidates Coming Soon
-              </h3>
-              <p className="text-muted-foreground">
-                Candidate management features will be available here
-              </p>
-            </div>
+          <TabsContent value="candidates" className="mt-6">
+            <LatestCandidates />
           </TabsContent>
         </Tabs>
       </div>

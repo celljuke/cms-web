@@ -13,6 +13,7 @@ import type {
   JobAttachmentsResponse,
   JobRecommendationsResponse,
   SimilarCandidatesResponse,
+  LatestCandidatesResponse,
 } from "@/modules/recruiting/types";
 
 const API_BASE_URL =
@@ -263,6 +264,36 @@ export class RecruitingService {
       const errorText = await response.text();
       throw new Error(
         `Failed to fetch similar candidates: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get latest candidates
+   */
+  async getLatestCandidates(
+    limit: number,
+    windowDays: number,
+    token: string
+  ): Promise<LatestCandidatesResponse> {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/cats/candidates/latest?limit=${limit}&window_days=${windowDays}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch latest candidates: ${response.status} ${response.statusText} - ${errorText}`
       );
     }
 
