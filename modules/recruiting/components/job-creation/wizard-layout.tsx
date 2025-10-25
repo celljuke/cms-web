@@ -32,6 +32,11 @@ const steps: { id: WizardStep; label: string; description: string }[] = [
     label: "Tags & Groups",
     description: "Organization and access",
   },
+  {
+    id: "custom-fields",
+    label: "Custom Fields",
+    description: "Additional custom fields",
+  },
   { id: "review", label: "Review", description: "Review and submit" },
 ];
 

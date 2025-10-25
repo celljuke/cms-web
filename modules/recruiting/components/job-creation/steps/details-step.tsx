@@ -13,10 +13,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import {
   Select,
   SelectContent,
@@ -188,10 +188,10 @@ export function DetailsStep({ onValidationChange }: DetailsStepProps) {
                 <FormItem>
                   <FormLabel>Internal Notes</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <RichTextEditor
+                      value={field.value || ""}
+                      onChange={field.onChange}
                       placeholder="Add any internal notes about this job..."
-                      className="min-h-[120px] resize-none"
-                      {...field}
                     />
                   </FormControl>
                   <FormDescription className="text-xs">

@@ -15,6 +15,7 @@ export type WizardStep =
   | "company"
   | "details"
   | "tags"
+  | "custom-fields"
   | "review";
 
 // Review metadata for display purposes

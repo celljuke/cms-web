@@ -11,6 +11,7 @@ import {
   CompanyStep,
   DetailsStep,
   TagsStep,
+  CustomFieldsStep,
   ReviewStep,
 } from "./steps";
 import {
@@ -35,6 +36,7 @@ const stepOrder: WizardStep[] = [
   "company",
   "details",
   "tags",
+  "custom-fields",
   "review",
 ];
 
@@ -115,6 +117,8 @@ export function JobCreationWizard({ onClose }: JobCreationWizardProps) {
         return <DetailsStep onValidationChange={setStepValid} />;
       case "tags":
         return <TagsStep onValidationChange={setStepValid} />;
+      case "custom-fields":
+        return <CustomFieldsStep onValidationChange={setStepValid} />;
       case "review":
         return <ReviewStep onValidationChange={setStepValid} />;
       default:

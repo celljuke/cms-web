@@ -20,11 +20,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useJobCreationStore } from "../../../stores/job-creation-store";
 import { useEffect, useState, useRef } from "react";
 import { useAvailableUsers } from "../../../hooks/use-available-users";
@@ -169,10 +169,10 @@ export function BasicInfoStep({ onValidationChange }: BasicInfoStepProps) {
                     Job Description <span className="text-destructive">*</span>
                   </FormLabel>
                   <FormControl>
-                    <Textarea
+                    <RichTextEditor
+                      value={field.value}
+                      onChange={field.onChange}
                       placeholder="Describe the role, responsibilities, and requirements..."
-                      className="min-h-[200px] resize-none"
-                      {...field}
                     />
                   </FormControl>
                   <FormDescription>

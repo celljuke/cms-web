@@ -15,6 +15,7 @@ import {
   Users,
   Tag,
   Clock,
+  Settings,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -277,6 +278,30 @@ export function ReviewStep({ onValidationChange }: ReviewStepProps) {
                     ? "EEO-1 Compliance Questionnaire"
                     : `Application ${app.id}`}
                 </Badge>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* Custom Fields */}
+      {formData.custom_fields && formData.custom_fields.length > 0 && (
+        <Card className="p-6 shadow-none">
+          <div className="flex items-center gap-2 mb-4">
+            <Settings className="h-5 w-5 text-primary" />
+            <h3 className="font-semibold">Custom Fields</h3>
+          </div>
+          <div className="space-y-3">
+            {formData.custom_fields.map((field, index) => (
+              <div key={index} className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-sm text-muted-foreground">Field ID</div>
+                  <div className="font-medium">{field.id}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Value</div>
+                  <div className="font-medium">{field.value}</div>
+                </div>
               </div>
             ))}
           </div>
