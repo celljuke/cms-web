@@ -51,12 +51,16 @@ export function JobCard({ job }: JobCardProps) {
 
     setIsUpdating(true);
     try {
+      const newIsActive = job.is_active ? 0 : 1;
+
       // API requires the full job object
       await updateJob.mutateAsync({
         jobId: job.job_id,
         data: {
           ...job,
-          is_active: job.is_active ? 0 : 1,
+          is_active: newIsActive,
+          status: newIsActive === 1 ? "Active" : "",
+          status_id: newIsActive === 1 ? 47864 : null,
         },
       });
     } finally {
