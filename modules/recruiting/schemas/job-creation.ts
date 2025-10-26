@@ -1,5 +1,40 @@
 import { z } from "zod";
 
+export const updateJobSchema = z
+  .object({
+    // Required fields by API
+    display_name: z.string(),
+    description: z.string(),
+    screening_email: z.string(),
+    criteria: z.string(),
+    job_id: z.number(),
+    is_active: z.number(),
+    // Optional fields
+    title: z.string().nullable().optional(),
+    location: z.string().nullable().optional(),
+    country_code: z.string().nullable().optional(),
+    is_hot: z.number().nullable().optional(),
+    salary: z.string().nullable().optional(),
+    remote_type: z.string().nullable().optional(),
+    max_rate: z.string().nullable().optional(),
+    duration: z.string().nullable().optional(),
+    start_date: z.string().nullable().optional(),
+    openings: z.number().nullable().optional(),
+    status: z.string().nullable().optional(),
+    status_id: z.number().nullable().optional(),
+    date_created: z.string().nullable().optional(),
+    date_modified: z.string().nullable().optional(),
+    category_name: z.string().nullable().optional(),
+    type: z.string().nullable().optional(),
+    company: z.string().nullable().optional(),
+    created_at: z.string().nullable().optional(),
+    updated_at: z.string().nullable().optional(),
+    created_by: z.number().nullable().optional(),
+  })
+  .passthrough(); // Allow other fields like application_forms, owner, recruiter, assigned_user
+
+export type UpdateJobData = z.infer<typeof updateJobSchema>;
+
 export const createJobSchema = z.object({
   // Basic Information
   title: z.string().min(1, "Job title is required"),

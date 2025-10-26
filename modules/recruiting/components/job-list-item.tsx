@@ -17,9 +17,12 @@ import {
   ExternalLink,
   Play,
   Pause,
+  Loader2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import type { Job } from "../types";
+import { useUpdateJob } from "../hooks/use-update-job";
 
 interface JobListItemProps {
   job: Job;
@@ -27,14 +30,37 @@ interface JobListItemProps {
 
 export function JobListItem({ job }: JobListItemProps) {
   const router = useRouter();
+  const updateJob = useUpdateJob();
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const handleRowClick = () => {
     router.push(`/recruiting/jobs/${job.job_id}`);
   };
 
-  const handleActionClick = (e: React.MouseEvent) => {
+  const handleViewInCats = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Action logic will be implemented here
+    const catsUrl = `https://match.catsone.com/index.php?m=jobs&a=show&jobOrderID=${job.job_id}`;
+    window.open(catsUrl, "_blank");
+  };
+
+  const handleToggleActive = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (isUpdating) return;
+
+    setIsUpdating(true);
+    try {
+      // API requires the full job object
+      await updateJob.mutateAsync({
+        jobId: job.job_id,
+        data: {
+          ...job,
+          is_active: job.is_active ? 0 : 1,
+        },
+      });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const getStatusColor = (status: string | null, isActive: number) => {
@@ -78,9 +104,20 @@ export function JobListItem({ job }: JobListItemProps) {
 
   return (
     <div
-      className="group flex items-center gap-4 p-4 rounded-lg border bg-card hover:shadow-md hover:border-blue-500/50 dark:hover:border-blue-800/50 transition-all duration-300 cursor-pointer"
-      onClick={handleRowClick}
+      className="group flex items-center gap-4 p-4 rounded-lg border bg-card hover:shadow-md hover:border-blue-500/50 dark:hover:border-blue-800/50 transition-all duration-300 cursor-pointer relative"
+      onClick={isUpdating ? undefined : handleRowClick}
     >
+      {/* Loading Overlay */}
+      {isUpdating && (
+        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 rounded-lg flex items-center justify-center">
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            <p className="text-sm font-medium text-muted-foreground">
+              Updating job...
+            </p>
+          </div>
+        </div>
+      )}
       {/* Icon */}
       <div
         className={`h-10 w-10 rounded-lg bg-gradient-to-br ${getIconGradient(
@@ -156,7 +193,7 @@ export function JobListItem({ job }: JobListItemProps) {
                     variant="outline"
                     size="icon"
                     className="gap-1.5 h-8"
-                    onClick={handleActionClick}
+                    onClick={handleViewInCats}
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
                   </Button>
@@ -172,7 +209,8 @@ export function JobListItem({ job }: JobListItemProps) {
                     variant="outline"
                     size="icon"
                     className="h-8 w-8 shrink-0"
-                    onClick={handleActionClick}
+                    onClick={handleToggleActive}
+                    disabled={isUpdating}
                   >
                     {job.is_active ? (
                       <Pause className="h-3.5 w-3.5" />

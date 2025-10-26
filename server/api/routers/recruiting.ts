@@ -1,7 +1,10 @@
 import { recruitingService } from "@/server/services/recruiting";
 import { protectedProcedure, router } from "../trpc";
 import { z } from "zod";
-import { createJobSchema } from "@/modules/recruiting/schemas/job-creation";
+import {
+  createJobSchema,
+  updateJobSchema,
+} from "@/modules/recruiting/schemas/job-creation";
 
 export const recruitingRouter = router({
   getJobs: protectedProcedure.query(({ ctx }) => {
@@ -172,5 +175,16 @@ export const recruitingRouter = router({
     .input(createJobSchema)
     .mutation(({ input, ctx }) => {
       return recruitingService.createJob(input, ctx.token);
+    }),
+
+  updateJob: protectedProcedure
+    .input(
+      z.object({
+        jobId: z.number(),
+        data: updateJobSchema,
+      })
+    )
+    .mutation(({ input, ctx }) => {
+      return recruitingService.updateJob(input.jobId, input.data, ctx.token);
     }),
 });

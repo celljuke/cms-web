@@ -473,6 +473,33 @@ export class RecruitingService {
 
     return response.json();
   }
+
+  /**
+   * Update an existing job
+   */
+  async updateJob(
+    jobId: number,
+    payload: Partial<Job>,
+    token: string
+  ): Promise<Job> {
+    const response = await fetch(`${API_BASE_URL}/recruiting/jobs/${jobId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to update job: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
 }
 
 export const recruitingService = new RecruitingService();
