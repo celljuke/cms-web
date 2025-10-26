@@ -15,6 +15,8 @@ interface JobFiltersProps {
   onSearchChange: (value: string) => void;
   statusFilter: string;
   onStatusChange: (value: string) => void;
+  sortBy: string;
+  onSortChange: (value: string) => void;
 }
 
 export function JobFilters({
@@ -22,7 +24,23 @@ export function JobFilters({
   onSearchChange,
   statusFilter,
   onStatusChange,
+  sortBy,
+  onSortChange,
 }: JobFiltersProps) {
+  const getSortLabel = () => {
+    switch (sortBy) {
+      case "newest":
+        return "Newest First";
+      case "oldest":
+        return "Oldest First";
+      case "title":
+        return "By Title (A-Z)";
+      case "status":
+        return "By Status";
+      default:
+        return "Sort";
+    }
+  };
   return (
     <div className="flex flex-col sm:flex-row gap-4">
       {/* Search */}
@@ -68,14 +86,22 @@ export function JobFilters({
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="gap-2">
             <SortAsc className="h-4 w-4" />
-            Sort
+            {getSortLabel()}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem>Newest First</DropdownMenuItem>
-          <DropdownMenuItem>Oldest First</DropdownMenuItem>
-          <DropdownMenuItem>By Title (A-Z)</DropdownMenuItem>
-          <DropdownMenuItem>By Status</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onSortChange("newest")}>
+            Newest First
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onSortChange("oldest")}>
+            Oldest First
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onSortChange("title")}>
+            By Title (A-Z)
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onSortChange("status")}>
+            By Status
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

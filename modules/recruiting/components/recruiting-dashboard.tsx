@@ -27,7 +27,8 @@ import { useRouter } from "next/navigation";
 export function RecruitingDashboard() {
   const [tab, setTab] = useState("jobs");
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("Active");
+  const [sortBy, setSortBy] = useState("newest");
   const [view, setView] = useState<"card" | "list">("card");
   const [windowDays] = useState(2);
   const [showMethodSelection, setShowMethodSelection] = useState(false);
@@ -43,22 +44,61 @@ export function RecruitingDashboard() {
       windowDays,
     });
 
-  // Filter jobs based on search and status
-  const filteredJobs = jobs?.filter((job: Job) => {
-    const matchesSearch =
-      searchQuery === "" ||
-      job.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.job_id.toString().includes(searchQuery) ||
-      (job.location &&
-        job.location.toLowerCase().includes(searchQuery.toLowerCase()));
+  // Filter and sort jobs
+  const filteredJobs = jobs
+    ?.filter((job: Job) => {
+      const matchesSearch =
+        searchQuery === "" ||
+        job.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job.job_id.toString().includes(searchQuery) ||
+        (job.location &&
+          job.location.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    const matchesStatus =
-      statusFilter === "all" ||
-      (statusFilter === "Inactive" && !job.is_active) ||
-      (job.is_active && job.status === statusFilter);
+      const matchesStatus =
+        statusFilter === "all" ||
+        (statusFilter === "Inactive" && !job.is_active) ||
+        (job.is_active && job.status === statusFilter);
 
-    return matchesSearch && matchesStatus;
-  });
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a: Job, b: Job) => {
+      switch (sortBy) {
+        case "newest":
+          // Sort by updated_at or created_at, newest first
+          const dateA = new Date(a.updated_at || a.created_at || 0).getTime();
+          const dateB = new Date(b.updated_at || b.created_at || 0).getTime();
+          return dateB - dateA;
+
+        case "oldest":
+          // Sort by updated_at or created_at, oldest first
+          const dateAOld = new Date(
+            a.updated_at || a.created_at || 0
+          ).getTime();
+          const dateBOld = new Date(
+            b.updated_at || b.created_at || 0
+          ).getTime();
+          return dateAOld - dateBOld;
+
+        case "title":
+          // Sort by title alphabetically (A-Z)
+          return a.display_name.localeCompare(b.display_name);
+
+        case "status":
+          // Sort by status: Active > OnHold > Closed > Inactive
+          const statusOrder: Record<string, number> = {
+            Active: 1,
+            OnHold: 2,
+            Closed: 3,
+            Inactive: 4,
+          };
+          const statusA = a.is_active ? a.status || "Active" : "Inactive";
+          const statusB = b.is_active ? b.status || "Active" : "Inactive";
+          return (statusOrder[statusA] || 5) - (statusOrder[statusB] || 5);
+
+        default:
+          return 0;
+      }
+    });
 
   // Calculate stats
   const stats = {
@@ -233,6 +273,8 @@ export function RecruitingDashboard() {
                     onSearchChange={setSearchQuery}
                     statusFilter={statusFilter}
                     onStatusChange={setStatusFilter}
+                    sortBy={sortBy}
+                    onSortChange={setSortBy}
                   />
                 </div>
                 <ViewSwitcher view={view} onViewChange={setView} />
