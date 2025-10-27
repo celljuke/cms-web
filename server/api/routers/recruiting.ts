@@ -187,4 +187,32 @@ export const recruitingRouter = router({
     .mutation(({ input, ctx }) => {
       return recruitingService.updateJob(input.jobId, input.data, ctx.token);
     }),
+
+  getNotifications: protectedProcedure
+    .input(
+      z.object({
+        unreadOnly: z.boolean().optional().default(false),
+        limit: z.number().optional().default(50),
+      })
+    )
+    .query(({ input, ctx }) => {
+      return recruitingService.getNotifications(
+        ctx.token,
+        input.unreadOnly,
+        input.limit
+      );
+    }),
+
+  markNotificationAsRead: protectedProcedure
+    .input(z.object({ notificationId: z.number() }))
+    .mutation(({ input, ctx }) => {
+      return recruitingService.markNotificationAsRead(
+        input.notificationId,
+        ctx.token
+      );
+    }),
+
+  markAllNotificationsAsRead: protectedProcedure.mutation(({ ctx }) => {
+    return recruitingService.markAllNotificationsAsRead(ctx.token);
+  }),
 });

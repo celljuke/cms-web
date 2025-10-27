@@ -22,6 +22,7 @@ import type {
   CreateJobPayload,
   CreateJobResponse,
 } from "@/modules/recruiting/types";
+import type { Notification } from "@/modules/recruiting/types/notifications";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://54.176.184.13:5006";
@@ -499,6 +500,92 @@ export class RecruitingService {
     }
 
     return response.json();
+  }
+
+  /**
+   * Get notifications
+   */
+  async getNotifications(
+    token: string,
+    unreadOnly: boolean = false,
+    limit: number = 50
+  ): Promise<Notification[]> {
+    const params = new URLSearchParams({
+      unread_only: unreadOnly.toString(),
+      limit: limit.toString(),
+    });
+
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/notifications?${params}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch notifications: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Mark notification as read
+   */
+  async markNotificationAsRead(
+    notificationId: number,
+    token: string
+  ): Promise<Notification> {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/notifications/${notificationId}/read`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to mark notification as read: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Mark all notifications as read
+   */
+  async markAllNotificationsAsRead(token: string): Promise<void> {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/notifications/read-all`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to mark all notifications as read: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
   }
 }
 

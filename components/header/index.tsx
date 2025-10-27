@@ -27,7 +27,7 @@ export function Header() {
   return (
     <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <Link href="/recruiting" className="flex items-center gap-4">
           <div className="text-primary dark:text-white w-20">
             <Logo />
           </div>
@@ -35,7 +35,7 @@ export function Header() {
           <span className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
             Career Match Solutions
           </span>
-        </div>
+        </Link>
 
         <div className="flex items-center gap-2">
           {/* Notifications */}
