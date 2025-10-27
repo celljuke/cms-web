@@ -94,9 +94,11 @@ export function Header() {
                   <span>My Profile</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <ExternalLink className="mr-2 h-4 w-4" />
-                <span>Access ATS</span>
+              <DropdownMenuItem asChild>
+                <Link href="https://match.catsone.com" target="_blank">
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  <span>Access ATS</span>
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
