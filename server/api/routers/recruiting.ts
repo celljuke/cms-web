@@ -215,4 +215,24 @@ export const recruitingRouter = router({
   markAllNotificationsAsRead: protectedProcedure.mutation(({ ctx }) => {
     return recruitingService.markAllNotificationsAsRead(ctx.token);
   }),
+
+  rephraseField: protectedProcedure
+    .input(
+      z.object({
+        fieldName: z.enum([
+          "description",
+          "criteria",
+          "screening_email",
+          "notes",
+        ]),
+        fieldData: z.string().min(1, "Field data is required"),
+      })
+    )
+    .mutation(({ input, ctx }) => {
+      return recruitingService.rephraseField(
+        input.fieldName,
+        input.fieldData,
+        ctx.token
+      );
+    }),
 });

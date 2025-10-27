@@ -2,12 +2,12 @@
 
 import {
   Bell,
-  Mail,
   Users,
-  FileText,
   CheckCircle,
+  Clock,
+  Mail,
   AlertCircle,
-  Loader2,
+  EyeOff,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,78 +16,117 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDistanceToNow } from "date-fns";
-import { useNotifications } from "@/modules/recruiting/hooks/use-notifications";
 import {
+  useNotifications,
   useMarkNotificationRead,
   useMarkAllNotificationsRead,
-} from "@/modules/recruiting/hooks/use-mark-notification-read";
+} from "@/modules/recruiting/hooks/use-notifications";
 import type {
   Notification,
   NotificationType,
   NotificationPriority,
 } from "@/modules/recruiting/types/notifications";
-import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 function getNotificationIcon(type: NotificationType) {
   switch (type) {
-    case "email_attention":
-      return <Mail className="h-4 w-4" />;
     case "new_qualified_candidates":
       return <Users className="h-4 w-4" />;
     case "candidate_reply":
+    case "email_attention":
       return <Mail className="h-4 w-4" />;
     case "application_processed":
-      return <FileText className="h-4 w-4" />;
+      return <CheckCircle className="h-4 w-4" />;
     case "system_alert":
       return <AlertCircle className="h-4 w-4" />;
     case "daily_digest":
-      return <CheckCircle className="h-4 w-4" />;
+      return <Clock className="h-4 w-4" />;
     default:
       return <Bell className="h-4 w-4" />;
   }
 }
 
-function getNotificationIconColor(priority: NotificationPriority) {
-  switch (priority) {
-    case "urgent":
-      return "text-red-500";
-    case "high":
-      return "text-orange-500";
-    case "medium":
+function getNotificationIconColor(type: NotificationType) {
+  switch (type) {
+    case "new_qualified_candidates":
       return "text-blue-500";
-    case "low":
+    case "candidate_reply":
+      return "text-green-500";
+    case "email_attention":
+      return "text-orange-500";
+    case "application_processed":
+      return "text-purple-500";
+    case "system_alert":
+      return "text-red-500";
+    case "daily_digest":
       return "text-gray-500";
     default:
       return "text-gray-500";
   }
 }
 
-export function Notifications() {
-  const router = useRouter();
-  const { data: notifications, isLoading } = useNotifications(false, 50);
-  const markAsRead = useMarkNotificationRead();
-  const markAllAsRead = useMarkAllNotificationsRead();
+function getPriorityColor(priority: NotificationPriority) {
+  switch (priority) {
+    case "urgent":
+      return "border-l-4 border-l-red-500";
+    case "high":
+      return "border-l-4 border-l-orange-500";
+    case "medium":
+      return "border-l-4 border-l-blue-500";
+    case "low":
+      return "border-l-4 border-l-gray-300";
+    default:
+      return "";
+  }
+}
 
-  const unreadCount = notifications?.filter((n) => !n.is_read).length || 0;
+export function Notifications() {
+  const {
+    data: notifications,
+    isLoading,
+    isError,
+  } = useNotifications({ limit: 100 });
+  const { mutate: markAsRead } = useMarkNotificationRead();
+  const { mutate: markAllAsRead } = useMarkAllNotificationsRead();
+
+  const unreadNotifications = notifications?.filter((n) => !n.is_read) || [];
+  const unreadCount = unreadNotifications.length;
 
   const handleNotificationClick = (notification: Notification) => {
-    // Mark as read
     if (!notification.is_read) {
-      markAsRead.mutate({ notificationId: notification.id });
+      markAsRead({ notificationId: notification.id });
     }
-
-    // Navigate to action URL if available
     if (notification.action_url) {
-      router.push(notification.action_url);
+      window.location.href = notification.action_url;
     }
   };
 
-  const handleMarkAllAsRead = () => {
-    markAllAsRead.mutate();
+  const handleMarkAllRead = () => {
+    markAllAsRead();
   };
+
+  if (isLoading) {
+    return (
+      <Button variant="ghost" size="icon" className="relative">
+        <Bell className="h-5 w-5 animate-pulse" />
+      </Button>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Button variant="ghost" size="icon" className="relative text-destructive">
+        <Bell className="h-5 w-5" />
+        <Badge
+          variant="destructive"
+          className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs rounded-full"
+        >
+          !
+        </Badge>
+      </Button>
+    );
+  }
 
   return (
     <Popover>
@@ -107,53 +146,33 @@ export function Notifications() {
       <PopoverContent className="w-96 p-0" align="end">
         <div className="flex items-center justify-between p-4 border-b">
           <h3 className="font-semibold text-base">Notifications</h3>
-          <div className="flex items-center gap-2">
-            {unreadCount > 0 && (
-              <Badge variant="secondary" className="text-xs">
-                {unreadCount} new
-              </Badge>
-            )}
-            {unreadCount > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 text-xs"
-                onClick={handleMarkAllAsRead}
-                disabled={markAllAsRead.isPending}
-              >
-                Mark all read
-              </Button>
-            )}
-          </div>
+          {unreadCount > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs text-muted-foreground"
+              onClick={handleMarkAllRead}
+            >
+              <EyeOff className="h-3 w-3 mr-1" /> Mark all as read
+            </Button>
+          )}
         </div>
-
-        {isLoading ? (
-          <div className="p-8 flex items-center justify-center">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
-        ) : !notifications || notifications.length === 0 ? (
-          <div className="p-8 text-center text-muted-foreground">
-            <Bell className="h-12 w-12 mx-auto mb-2 opacity-20" />
-            <p className="text-sm">No notifications yet</p>
-          </div>
-        ) : (
-          <ScrollArea className="h-[400px]">
-            <div className="divide-y">
-              {notifications.map((notification) => (
+        <ScrollArea className="h-[400px]">
+          <div className="divide-y">
+            {notifications && notifications.length > 0 ? (
+              notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={cn(
-                    "p-4 hover:bg-accent/50 transition-colors cursor-pointer",
-                    !notification.is_read && "bg-accent/20"
-                  )}
+                  className={`p-4 hover:bg-accent/50 transition-colors cursor-pointer ${
+                    !notification.is_read ? "bg-accent/20" : ""
+                  } ${getPriorityColor(notification.priority)}`}
                   onClick={() => handleNotificationClick(notification)}
                 >
                   <div className="flex gap-3">
                     <div
-                      className={cn(
-                        "mt-1",
-                        getNotificationIconColor(notification.priority)
-                      )}
+                      className={`mt-1 ${getNotificationIconColor(
+                        notification.notification_type
+                      )}`}
                     >
                       {getNotificationIcon(notification.notification_type)}
                     </div>
@@ -163,10 +182,10 @@ export function Notifications() {
                           {notification.title}
                         </p>
                         {!notification.is_read && (
-                          <div className="h-2 w-2 rounded-full bg-blue-500 mt-1 shrink-0" />
+                          <div className="h-2 w-2 rounded-full bg-blue-500 shrink-0 mt-1" />
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground leading-snug">
+                      <p className="text-sm text-muted-foreground line-clamp-2">
                         {notification.message}
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -180,10 +199,20 @@ export function Notifications() {
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </ScrollArea>
-        )}
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 px-4">
+                <Bell className="h-12 w-12 text-muted-foreground/50 mb-4" />
+                <p className="text-sm font-medium text-muted-foreground">
+                  No notifications
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  You're all caught up!
+                </p>
+              </div>
+            )}
+          </div>
+        </ScrollArea>
       </PopoverContent>
     </Popover>
   );

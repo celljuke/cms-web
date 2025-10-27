@@ -25,8 +25,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useJobCreationStore } from "../../../stores/job-creation-store";
+import { useRephraseField } from "../../../hooks/use-rephrase-field";
 import { useEffect } from "react";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 const detailsSchema = z.object({
   start_date: z.string().min(1, "Start date is required"),
@@ -54,6 +56,7 @@ interface DetailsStepProps {
 
 export function DetailsStep({ onValidationChange }: DetailsStepProps) {
   const { formData, updateFormData } = useJobCreationStore();
+  const rephraseField = useRephraseField();
 
   // Parse existing datetime if available
   const existingDateTime = formData.job_close_schedule_time
@@ -76,6 +79,25 @@ export function DetailsStep({ onValidationChange }: DetailsStepProps) {
 
   const { watch, formState } = form;
   const autoCloseEnabled = form.watch("auto_close_enabled");
+
+  const handleRephraseNotes = async () => {
+    const currentNotes = form.getValues("notes");
+    if (!currentNotes) {
+      toast.error("Please enter notes first");
+      return;
+    }
+
+    try {
+      const result = await rephraseField.mutateAsync({
+        fieldName: "notes",
+        fieldData: currentNotes,
+      });
+      form.setValue("notes", result.rephrased);
+      toast.success("Notes rephrased successfully!");
+    } catch (error) {
+      // Error is already handled by the hook
+    }
+  };
 
   useEffect(() => {
     const subscription = watch((value) => {
@@ -192,6 +214,8 @@ export function DetailsStep({ onValidationChange }: DetailsStepProps) {
                       value={field.value || ""}
                       onChange={field.onChange}
                       placeholder="Add any internal notes about this job..."
+                      onAiRephrase={handleRephraseNotes}
+                      isRephrasing={rephraseField.isPending}
                     />
                   </FormControl>
                   <FormDescription className="text-xs">

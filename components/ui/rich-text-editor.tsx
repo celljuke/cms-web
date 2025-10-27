@@ -12,6 +12,7 @@ import {
   Link as LinkIcon,
   Undo,
   Redo,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "./button";
 import { cn } from "@/lib/utils";
@@ -23,6 +24,8 @@ interface RichTextEditorProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  onAiRephrase?: () => void;
+  isRephrasing?: boolean;
 }
 
 export function RichTextEditor({
@@ -31,6 +34,8 @@ export function RichTextEditor({
   placeholder = "Start typing...",
   className,
   disabled = false,
+  onAiRephrase,
+  isRephrasing = false,
 }: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [
@@ -91,6 +96,26 @@ export function RichTextEditor({
     >
       {/* Toolbar */}
       <div className="flex items-center gap-1 p-2 border-b bg-muted/30">
+        {onAiRephrase && (
+          <>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onAiRephrase}
+              disabled={disabled || isRephrasing || !value}
+              className={cn(
+                "h-8 gap-1.5 text-xs font-medium",
+                isRephrasing && "animate-pulse"
+              )}
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              {isRephrasing ? "Rephrasing..." : "Rephrase with AI"}
+            </Button>
+            <div className="w-px h-6 bg-border mx-1" />
+          </>
+        )}
+
         <Button
           type="button"
           variant="ghost"

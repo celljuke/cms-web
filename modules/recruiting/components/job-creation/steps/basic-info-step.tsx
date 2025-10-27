@@ -28,10 +28,12 @@ import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useJobCreationStore } from "../../../stores/job-creation-store";
 import { useEffect, useState, useRef } from "react";
 import { useAvailableUsers } from "../../../hooks/use-available-users";
+import { useRephraseField } from "../../../hooks/use-rephrase-field";
 import { Search, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { VList } from "virtua";
+import { toast } from "sonner";
 
 const basicInfoSchema = z.object({
   title: z.string().min(1, "Job title is required"),
@@ -68,6 +70,7 @@ export function BasicInfoStep({ onValidationChange }: BasicInfoStepProps) {
   const recruitersListRef = useRef<HTMLDivElement>(null);
 
   const { data: users, isLoading: isUsersLoading } = useAvailableUsers();
+  const rephraseField = useRephraseField();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -116,6 +119,25 @@ export function BasicInfoStep({ onValidationChange }: BasicInfoStepProps) {
   const handleRemoveRecruiter = () => {
     setSelectedRecruiterId(undefined);
     form.setValue("recruiter_id", undefined);
+  };
+
+  const handleRephraseDescription = async () => {
+    const currentDescription = form.getValues("description");
+    if (!currentDescription) {
+      toast.error("Please enter a description first");
+      return;
+    }
+
+    try {
+      const result = await rephraseField.mutateAsync({
+        fieldName: "description",
+        fieldData: currentDescription,
+      });
+      form.setValue("description", result.rephrased);
+      toast.success("Description rephrased successfully!");
+    } catch (error) {
+      // Error is already handled by the hook
+    }
   };
 
   const { watch, formState } = form;
@@ -173,6 +195,8 @@ export function BasicInfoStep({ onValidationChange }: BasicInfoStepProps) {
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="Describe the role, responsibilities, and requirements..."
+                      onAiRephrase={handleRephraseDescription}
+                      isRephrasing={rephraseField.isPending}
                     />
                   </FormControl>
                   <FormDescription>

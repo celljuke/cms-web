@@ -587,6 +587,33 @@ export class RecruitingService {
       );
     }
   }
+
+  async rephraseField(
+    fieldName: string,
+    fieldData: string,
+    token: string
+  ): Promise<{ rephrased: string }> {
+    const response = await fetch(`${API_BASE_URL}/recruiting/ai/rephrase`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        field_name: fieldName,
+        field_data: fieldData,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to rephrase field: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
 }
 
 export const recruitingService = new RecruitingService();
