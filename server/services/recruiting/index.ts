@@ -663,6 +663,56 @@ export class RecruitingService {
 
     return response.json();
   }
+
+  async getNotificationPreferences(token: string) {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/notifications/preferences`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch notification preferences: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  async updateNotificationPreferences(
+    preferences: Record<string, any>,
+    token: string
+  ) {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/notifications/preferences`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(preferences),
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to update notification preferences: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
 }
 
 export const recruitingService = new RecruitingService();

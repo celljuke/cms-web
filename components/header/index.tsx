@@ -1,6 +1,6 @@
 "use client";
 
-import { Settings, LogOut, Moon, Sun, User, ExternalLink } from "lucide-react";
+import { Settings, LogOut, Moon, Sun, ExternalLink } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useAuth, useSignOut } from "@/modules/auth";
 import { useProfile } from "@/modules/profile";
@@ -89,9 +89,9 @@ export function Header() {
                 </>
               )}
               <DropdownMenuItem asChild>
-                <Link href="/profile">
-                  <User className="mr-2 h-4 w-4" />
-                  <span>My Profile</span>
+                <Link href="/settings">
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Account Settings</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>

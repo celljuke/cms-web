@@ -245,4 +245,14 @@ export const recruitingRouter = router({
     .query(({ input, ctx }) => {
       return recruitingService.getJobSubmission(input.jobId, ctx.token);
     }),
+
+  getNotificationPreferences: protectedProcedure.query(({ ctx }) => {
+    return recruitingService.getNotificationPreferences(ctx.token);
+  }),
+
+  updateNotificationPreferences: protectedProcedure
+    .input(z.record(z.any()))
+    .mutation(({ input, ctx }) => {
+      return recruitingService.updateNotificationPreferences(input, ctx.token);
+    }),
 });
