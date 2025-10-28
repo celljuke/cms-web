@@ -1,9 +1,15 @@
 "use client";
 
-import { Settings, LogOut, Moon, Sun, ExternalLink } from "lucide-react";
+import {
+  Settings,
+  LogOut,
+  Moon,
+  Sun,
+  ExternalLink,
+  BarChart3,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import { useAuth, useSignOut } from "@/modules/auth";
-import { useProfile } from "@/modules/profile";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -17,11 +23,15 @@ import {
 import { Notifications } from "./notifications";
 import { Logo } from "./logo";
 import Link from "next/link";
+import type { UserProfile } from "@/modules/profile/types";
 
-export function Header() {
+interface HeaderProps {
+  profile: UserProfile | null;
+}
+
+export function Header({ profile }: HeaderProps) {
   const { theme, setTheme } = useTheme();
   const { user } = useAuth();
-  const { profile } = useProfile();
   const { handleSignOut } = useSignOut();
 
   return (
@@ -94,6 +104,14 @@ export function Header() {
                   <span>Account Settings</span>
                 </Link>
               </DropdownMenuItem>
+              {profile?.role === "admin" && (
+                <DropdownMenuItem asChild>
+                  <Link href="/admin">
+                    <BarChart3 className="mr-2 h-4 w-4" />
+                    <span>Admin Dashboard</span>
+                  </Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem asChild>
                 <Link href="https://match.catsone.com" target="_blank">
                   <ExternalLink className="mr-2 h-4 w-4" />

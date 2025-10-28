@@ -713,6 +713,29 @@ export class RecruitingService {
 
     return response.json();
   }
+
+  async getWeeklyReport(weeksBack: number, timeFilter: string, token: string) {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/admin/reports/weekly?weeks_back=${weeksBack}&time_filter=${timeFilter}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch weekly report: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
 }
 
 export const recruitingService = new RecruitingService();

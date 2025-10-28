@@ -251,8 +251,23 @@ export const recruitingRouter = router({
   }),
 
   updateNotificationPreferences: protectedProcedure
-    .input(z.record(z.any()))
+    .input(z.record(z.string(), z.any()))
     .mutation(({ input, ctx }) => {
       return recruitingService.updateNotificationPreferences(input, ctx.token);
+    }),
+
+  getWeeklyReport: protectedProcedure
+    .input(
+      z.object({
+        weeksBack: z.number().int().min(0).default(0),
+        timeFilter: z.enum(["today", "weekly"]).default("weekly"),
+      })
+    )
+    .query(({ input, ctx }) => {
+      return recruitingService.getWeeklyReport(
+        input.weeksBack,
+        input.timeFilter,
+        ctx.token
+      );
     }),
 });

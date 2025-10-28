@@ -46,27 +46,39 @@ export function SignInForm() {
   });
 
   const signInMutation = trpc.auth.signIn.useMutation({
-    onSuccess: (data) => {
-      // Store tokens
-      if (typeof window !== "undefined") {
-        localStorage.setItem("access_token", data.accessToken);
-        localStorage.setItem("token_type", data.tokenType);
+    onSuccess: async (data) => {
+      // Store tokens in httpOnly cookie via API route
+      try {
+        await fetch("/api/auth/set-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            accessToken: data.accessToken,
+            tokenType: data.tokenType,
+          }),
+        });
 
-        // Set cookie for middleware
-        document.cookie = `access_token=${data.accessToken}; path=/; max-age=${
-          7 * 24 * 60 * 60
-        }; SameSite=Lax`;
+        // Also store in localStorage for backward compatibility with existing code
+        if (typeof window !== "undefined") {
+          localStorage.setItem("access_token", data.accessToken);
+          localStorage.setItem("token_type", data.tokenType);
+        }
+
+        // Show success message
+        toast.success("Welcome back!", {
+          description: `Signed in as ${
+            data.user?.email || form.getValues("username")
+          }`,
+        });
+
+        // Redirect to dashboard
+        router.push("/recruiting");
+      } catch (error) {
+        console.error("Failed to set auth cookie:", error);
+        toast.error("Authentication error", {
+          description: "Please try signing in again",
+        });
       }
-
-      // Show success message
-      toast.success("Welcome back!", {
-        description: `Signed in as ${
-          data.user?.email || form.getValues("username")
-        }`,
-      });
-
-      // Redirect to dashboard
-      router.push("/recruiting");
     },
     onError: (error) => {
       toast.error("Sign in failed", {
