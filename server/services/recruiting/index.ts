@@ -614,6 +614,55 @@ export class RecruitingService {
 
     return response.json();
   }
+
+  /**
+   * Get all job submissions (draft jobs)
+   */
+  async getJobSubmissions(token: string) {
+    const response = await fetch(`${API_BASE_URL}/recruiting/jobs-submission`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch job submissions: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get a single job submission by ID
+   */
+  async getJobSubmission(jobId: number, token: string) {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/jobs-submission/${jobId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch job submission: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
 }
 
 export const recruitingService = new RecruitingService();

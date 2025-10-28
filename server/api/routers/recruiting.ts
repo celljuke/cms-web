@@ -235,4 +235,14 @@ export const recruitingRouter = router({
         ctx.token
       );
     }),
+
+  getJobSubmissions: protectedProcedure.query(({ ctx }) => {
+    return recruitingService.getJobSubmissions(ctx.token);
+  }),
+
+  getJobSubmission: protectedProcedure
+    .input(z.object({ jobId: z.number() }))
+    .query(({ input, ctx }) => {
+      return recruitingService.getJobSubmission(input.jobId, ctx.token);
+    }),
 });

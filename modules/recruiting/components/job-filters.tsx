@@ -17,6 +17,7 @@ interface JobFiltersProps {
   onStatusChange: (value: string) => void;
   sortBy: string;
   onSortChange: (value: string) => void;
+  hideStatusFilter?: boolean;
 }
 
 export function JobFilters({
@@ -26,6 +27,7 @@ export function JobFilters({
   onStatusChange,
   sortBy,
   onSortChange,
+  hideStatusFilter = false,
 }: JobFiltersProps) {
   const getSortLabel = () => {
     switch (sortBy) {
@@ -55,31 +57,33 @@ export function JobFilters({
       </div>
 
       {/* Status Filter */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="gap-2">
-            <Filter className="h-4 w-4" />
-            {statusFilter === "all" ? "All Status" : statusFilter}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => onStatusChange("all")}>
-            All Status
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onStatusChange("Active")}>
-            Active
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onStatusChange("OnHold")}>
-            On Hold
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onStatusChange("Closed")}>
-            Closed
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onStatusChange("Inactive")}>
-            Inactive
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {!hideStatusFilter && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="gap-2">
+              <Filter className="h-4 w-4" />
+              {statusFilter === "all" ? "All Status" : statusFilter}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onStatusChange("all")}>
+              All Status
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onStatusChange("Active")}>
+              Active
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onStatusChange("OnHold")}>
+              On Hold
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onStatusChange("Closed")}>
+              Closed
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onStatusChange("Inactive")}>
+              Inactive
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
 
       {/* Sort */}
       <DropdownMenu>

@@ -2,8 +2,8 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import {
   Tooltip,
   TooltipContent,
@@ -14,11 +14,11 @@ import {
   Briefcase,
   MapPin,
   Clock,
-  User,
   ExternalLink,
   Play,
   Pause,
   Loader2,
+  Flame,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -69,6 +69,11 @@ export function JobCard({ job }: JobCardProps) {
   };
 
   const getStatusColor = (status: string | null, isActive: number) => {
+    // Check for Draft status first
+    if (status === "Draft") {
+      return "bg-cyan-500/10 text-cyan-700 dark:text-cyan-400";
+    }
+
     if (!isActive) return "bg-gray-500/10 text-gray-700 dark:text-gray-300";
 
     switch (status) {
@@ -84,6 +89,11 @@ export function JobCard({ job }: JobCardProps) {
   };
 
   const getIconGradient = (status: string | null, isActive: number) => {
+    // Check for Draft status first
+    if (status === "Draft") {
+      return "from-cyan-400 to-teal-500";
+    }
+
     if (!isActive) return "from-gray-400 to-gray-500";
 
     switch (status) {
@@ -96,15 +106,6 @@ export function JobCard({ job }: JobCardProps) {
       default:
         return "from-blue-500 to-cyan-500";
     }
-  };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
   };
 
   const truncateText = (text: string, maxLength: number) => {
@@ -153,9 +154,27 @@ export function JobCard({ job }: JobCardProps) {
                 job.is_active
               )} border-0`}
             >
-              {job.is_active ? job.status || "Active" : "Inactive"}
+              {job.status === "Draft"
+                ? "Draft"
+                : job.is_active
+                ? job.status || "Active"
+                : "Inactive"}
             </Badge>
           </div>
+          {job.is_hot === 1 && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center justify-center h-8 w-8 rounded-full bg-orange-500/10 shrink-0">
+                    <Flame className="h-4 w-4 text-orange-500" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Hot Job</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </div>
 
         {/* Job Title */}
@@ -190,13 +209,10 @@ export function JobCard({ job }: JobCardProps) {
                 <span>{new Date(job.updated_at).toLocaleDateString()}</span>
               </div>
             )}
-            {job.assigned_user && (
-              <div className="flex items-center gap-1.5">
-                <User className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                <span className="text-muted-foreground truncate max-w-[120px]">
-                  {job.assigned_user.name}
-                </span>
-              </div>
+            {job.assigned_user ? (
+              <UserAvatar name={job.assigned_user.name} size="sm" />
+            ) : (
+              <UserAvatar name="Unassigned" size="sm" isUnassigned />
             )}
           </div>
         </div>

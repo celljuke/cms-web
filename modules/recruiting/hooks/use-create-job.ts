@@ -9,8 +9,10 @@ export function useCreateJob() {
   return trpc.recruiting.createJob.useMutation({
     onSuccess: (data) => {
       toast.success("Job created successfully!");
-      utils.recruiting.getJobs.invalidate();
-      router.push(`/recruiting/jobs/${data.id}`);
+      // Invalidate job submissions (drafts) cache
+      utils.recruiting.getJobSubmissions.invalidate();
+      // Redirect to recruiting dashboard with drafts tab active
+      router.push("/recruiting?tab=drafts");
     },
     onError: (error) => {
       toast.error(error.message || "Failed to create job");

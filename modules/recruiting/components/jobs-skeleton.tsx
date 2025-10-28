@@ -49,44 +49,66 @@ export function JobsSkeleton() {
       </div>
 
       {/* Skeleton Cards */}
-      {[...Array(5)].map((_, index) => (
-        <Card key={index} className="animate-pulse">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between gap-4">
-              {/* Main Content */}
-              <div className="flex-1 min-w-0">
-                {/* Header */}
-                <div className="flex items-start gap-3 mb-4">
-                  <Skeleton className="h-12 w-12 rounded-lg" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[...Array(6)].map((_, index) => (
+          <Card
+            key={index}
+            className="group h-full shadow-none py-2 animate-pulse"
+          >
+            <CardContent className="p-4 h-full flex flex-col">
+              {/* Header with Status */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-10 w-10 rounded-lg" />
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                </div>
+              </div>
 
-                  <div className="flex-1 space-y-2">
-                    <Skeleton className="h-6 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
+              {/* Job Title */}
+              <div className="mb-2 min-h-[3rem]">
+                <Skeleton className="h-5 w-full mb-2" />
+                <Skeleton className="h-5 w-3/4" />
+              </div>
+
+              {/* Job ID */}
+              <Skeleton className="h-4 w-24 mb-3" />
+
+              {/* Description */}
+              <div className="space-y-2 mb-4 flex-1">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+              </div>
+
+              {/* Location */}
+              <div className="flex items-center gap-2 mb-4">
+                <Skeleton className="h-3.5 w-3.5 rounded" />
+                <Skeleton className="h-4 w-32" />
+              </div>
+
+              {/* Footer with Metadata */}
+              <div className="pt-3 border-t mt-auto space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <Skeleton className="h-3.5 w-3.5 rounded" />
+                    <Skeleton className="h-3 w-24" />
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Skeleton className="h-3.5 w-3.5 rounded" />
+                    <Skeleton className="h-3 w-20" />
                   </div>
                 </div>
-
-                {/* Description */}
-                <div className="space-y-2 mb-4">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-5/6" />
-                </div>
-
-                {/* Metadata */}
-                <div className="flex items-center gap-4">
-                  <Skeleton className="h-3 w-24" />
-                  <Skeleton className="h-3 w-32" />
-                </div>
               </div>
 
-              {/* Right Section */}
-              <div className="flex flex-col items-end gap-4">
-                <Skeleton className="h-6 w-20 rounded-full" />
-                <Skeleton className="h-10 w-10 rounded-full" />
+              {/* Actions */}
+              <div className="flex items-center gap-2 mt-4 pt-3 border-t">
+                <Skeleton className="h-8 flex-1 rounded-md" />
+                <Skeleton className="h-8 w-8 rounded-md" />
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }

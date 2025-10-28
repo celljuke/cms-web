@@ -1,8 +1,8 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import {
   Tooltip,
   TooltipContent,
@@ -11,13 +11,13 @@ import {
 } from "@/components/ui/tooltip";
 import {
   Briefcase,
-  MapPin,
   Clock,
   User,
   ExternalLink,
   Play,
   Pause,
   Loader2,
+  Flame,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -68,6 +68,11 @@ export function JobListItem({ job }: JobListItemProps) {
   };
 
   const getStatusColor = (status: string | null, isActive: number) => {
+    // Check for Draft status first
+    if (status === "Draft") {
+      return "bg-cyan-500/10 text-cyan-700 dark:text-cyan-400";
+    }
+
     if (!isActive) return "bg-gray-500/10 text-gray-700 dark:text-gray-300";
 
     switch (status) {
@@ -83,6 +88,11 @@ export function JobListItem({ job }: JobListItemProps) {
   };
 
   const getIconGradient = (status: string | null, isActive: number) => {
+    // Check for Draft status first
+    if (status === "Draft") {
+      return "from-cyan-400 to-teal-500";
+    }
+
     if (!isActive) return "from-gray-400 to-gray-500";
 
     switch (status) {
@@ -97,140 +107,252 @@ export function JobListItem({ job }: JobListItemProps) {
     }
   };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   return (
     <div
-      className="group flex items-center gap-4 p-4 rounded-lg border bg-card hover:shadow-md hover:border-blue-500/50 dark:hover:border-blue-800/50 transition-all duration-300 cursor-pointer relative"
+      className="group p-3 md:p-4 rounded-lg border bg-card hover:shadow-md hover:border-blue-500/50 dark:hover:border-blue-800/50 transition-all duration-300 cursor-pointer relative"
       onClick={isUpdating ? undefined : handleRowClick}
     >
       {/* Loading Overlay */}
       {isUpdating && (
         <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 rounded-lg flex items-center justify-center">
           <div className="flex items-center gap-2">
-            <Loader2 className="h-5 w-5 animate-spin text-primary" />
-            <p className="text-sm font-medium text-muted-foreground">
-              Updating job...
+            <Loader2 className="h-4 w-4 md:h-5 md:w-5 animate-spin text-primary" />
+            <p className="text-xs md:text-sm font-medium text-muted-foreground">
+              Updating...
             </p>
           </div>
         </div>
       )}
-      {/* Icon */}
-      <div
-        className={`h-10 w-10 rounded-lg bg-gradient-to-br ${getIconGradient(
-          job.status,
-          job.is_active
-        )} flex items-center justify-center text-white shrink-0 transition-colors duration-300`}
-      >
-        <Briefcase className="h-5 w-5" />
-      </div>
 
-      {/* Job Info - Grid with fixed column widths */}
-      <div className="flex-1 min-w-0 grid grid-cols-[1fr_200px_200px_auto] gap-6 items-center">
-        {/* Title & ID */}
-        <div className="min-w-0">
-          <h3 className="font-semibold text-base mb-1 truncate group-hover:text-primary transition-colors">
-            {job.display_name}
-          </h3>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span>ID: {job.job_id}</span>
+      {/* Mobile Layout */}
+      <div className="flex md:hidden flex-col gap-3">
+        {/* Header Row */}
+        <div className="flex items-start gap-3">
+          <div
+            className={`h-10 w-10 rounded-lg bg-gradient-to-br ${getIconGradient(
+              job.status,
+              job.is_active
+            )} flex items-center justify-center text-white shrink-0`}
+          >
+            <Briefcase className="h-5 w-5" />
           </div>
-        </div>
 
-        {/* Location - Fixed width column */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground min-w-0">
-          {job.location ? (
-            <>
-              <MapPin className="h-3.5 w-3.5 shrink-0" />
-              <span className="truncate">{job.location}</span>
-            </>
-          ) : (
-            <span className="text-muted-foreground/50">No location</span>
-          )}
-        </div>
-
-        {/* Metadata - Fixed width column */}
-        <div className="flex flex-col gap-1.5 text-xs text-muted-foreground min-w-0">
-          {job.updated_at ? (
-            <div className="flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5 shrink-0" />
-              <span className="truncate">
-                {new Date(job.updated_at).toLocaleDateString()}
-              </span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="font-semibold text-sm line-clamp-2 group-hover:text-primary transition-colors flex-1">
+                {job.display_name}
+              </h3>
+              {job.is_hot === 1 && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center justify-center h-6 w-6 rounded-full bg-orange-500/10 shrink-0">
+                        <Flame className="h-3 w-3 text-orange-500" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Hot Job</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </div>
-          ) : (
-            <div className="h-4" />
-          )}
-          {job.assigned_user ? (
-            <div className="flex items-center gap-1.5">
-              <User className="h-3.5 w-3.5 shrink-0" />
-              <span className="truncate">{job.assigned_user.name}</span>
-            </div>
-          ) : (
-            <div className="h-4" />
-          )}
-        </div>
+            <p className="text-xs text-muted-foreground">ID: {job.job_id}</p>
+          </div>
 
-        {/* Status & Actions - Fixed width */}
-        <div className="flex items-center gap-3 justify-end w-[260px]">
           <Badge
             className={`${getStatusColor(
               job.status,
               job.is_active
-            )} border-0 whitespace-nowrap`}
+            )} border-0 text-[10px] whitespace-nowrap shrink-0`}
           >
-            {job.is_active ? job.status || "Active" : "Inactive"}
+            {job.status === "Draft"
+              ? "Draft"
+              : job.is_active
+              ? job.status || "Active"
+              : "Inactive"}
           </Badge>
+        </div>
 
-          <TooltipProvider>
-            <div className="flex items-center gap-2">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="gap-1.5 h-8"
-                    onClick={handleViewInCats}
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Open job in CATS ATS system</p>
-                </TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8 shrink-0"
-                    onClick={handleToggleActive}
-                    disabled={isUpdating}
-                  >
-                    {job.is_active ? (
-                      <Pause className="h-3.5 w-3.5" />
-                    ) : (
-                      <Play className="h-3.5 w-3.5" />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>
-                    {job.is_active ? "Pause this job" : "Activate this job"}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
+        {/* Info Row */}
+        <div className="flex items-center justify-between text-xs">
+          {job.updated_at && (
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <Clock className="h-3 w-3 shrink-0" />
+              <span>{new Date(job.updated_at).toLocaleDateString()}</span>
             </div>
-          </TooltipProvider>
+          )}
+          {job.assigned_user && (
+            <UserAvatar name={job.assigned_user.name} size="sm" />
+          )}
+        </div>
+
+        {/* Actions Row */}
+        <TooltipProvider>
+          <div className="flex items-center gap-2 pt-2 border-t">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 h-8 text-xs"
+                  onClick={handleViewInCats}
+                >
+                  <ExternalLink className="h-3 w-3 mr-1.5" />
+                  View in CATS
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Open job in CATS ATS system</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={handleToggleActive}
+                  disabled={isUpdating}
+                >
+                  {job.is_active ? (
+                    <Pause className="h-3 w-3" />
+                  ) : (
+                    <Play className="h-3 w-3" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{job.is_active ? "Pause this job" : "Activate this job"}</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden md:flex items-center gap-4">
+        {/* Icon */}
+        <div
+          className={`h-10 w-10 rounded-lg bg-gradient-to-br ${getIconGradient(
+            job.status,
+            job.is_active
+          )} flex items-center justify-center text-white shrink-0 transition-colors duration-300`}
+        >
+          <Briefcase className="h-5 w-5" />
+        </div>
+
+        {/* Job Info - Flexible layout */}
+        <div className="flex-1 min-w-0 flex items-center gap-4">
+          {/* Title & ID - Takes up remaining space */}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-base mb-1 truncate group-hover:text-primary transition-colors">
+              {job.display_name}
+            </h3>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span>ID: {job.job_id}</span>
+            </div>
+          </div>
+
+          {/* Updated Date */}
+          <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0 max-w-[120px]">
+            {job.updated_at ? (
+              <>
+                <Clock className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">
+                  {new Date(job.updated_at).toLocaleDateString()}
+                </span>
+              </>
+            ) : (
+              <span className="text-muted-foreground/50 text-xs">No date</span>
+            )}
+          </div>
+
+          {/* User Avatar */}
+          <div className="flex items-center justify-center min-w-0">
+            {job.assigned_user ? (
+              <UserAvatar name={job.assigned_user.name} size="md" />
+            ) : (
+              <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+                <User className="h-4 w-4 text-muted-foreground" />
+              </div>
+            )}
+          </div>
+
+          {/* Status & Actions - Fixed width */}
+          <div className="flex items-center gap-3 justify-end shrink-0">
+            {job.is_hot === 1 && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-orange-500/10 shrink-0">
+                      <Flame className="h-4 w-4 text-orange-500" />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Hot Job</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+
+            <Badge
+              className={`${getStatusColor(
+                job.status,
+                job.is_active
+              )} border-0 whitespace-nowrap`}
+            >
+              {job.status === "Draft"
+                ? "Draft"
+                : job.is_active
+                ? job.status || "Active"
+                : "Inactive"}
+            </Badge>
+
+            <TooltipProvider>
+              <div className="flex items-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="gap-1.5 h-8"
+                      onClick={handleViewInCats}
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Open job in CATS ATS system</p>
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 shrink-0"
+                      onClick={handleToggleActive}
+                      disabled={isUpdating}
+                    >
+                      {job.is_active ? (
+                        <Pause className="h-3.5 w-3.5" />
+                      ) : (
+                        <Play className="h-3.5 w-3.5" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                      {job.is_active ? "Pause this job" : "Activate this job"}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </TooltipProvider>
+          </div>
         </div>
       </div>
     </div>
