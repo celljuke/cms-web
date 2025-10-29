@@ -28,6 +28,7 @@ import type {
   NotificationPriority,
 } from "@/modules/recruiting/types/notifications";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useRouter } from "next/navigation";
 
 function getNotificationIcon(type: NotificationType) {
   switch (type) {
@@ -66,16 +67,33 @@ function getNotificationIconColor(type: NotificationType) {
   }
 }
 
-function getPriorityColor(priority: NotificationPriority) {
+function getPriorityBadgeVariant(
+  priority: NotificationPriority
+): "destructive" | "warning" | "default" | "secondary" | "outline" {
   switch (priority) {
     case "urgent":
-      return "border-l-4 border-l-red-500";
+      return "destructive";
     case "high":
-      return "border-l-4 border-l-orange-500";
+      return "warning";
     case "medium":
-      return "border-l-4 border-l-blue-500";
+      return "secondary";
     case "low":
-      return "border-l-4 border-l-gray-300";
+      return "outline";
+    default:
+      return "outline";
+  }
+}
+
+function getPriorityLabel(priority: NotificationPriority) {
+  switch (priority) {
+    case "urgent":
+      return "Urgent";
+    case "high":
+      return "High";
+    case "medium":
+      return "Medium";
+    case "low":
+      return "Low";
     default:
       return "";
   }
@@ -89,7 +107,7 @@ export function Notifications() {
   } = useNotifications({ limit: 100 });
   const { mutate: markAsRead } = useMarkNotificationRead();
   const { mutate: markAllAsRead } = useMarkAllNotificationsRead();
-
+  const router = useRouter();
   const unreadNotifications = notifications?.filter((n) => !n.is_read) || [];
   const unreadCount = unreadNotifications.length;
 
@@ -98,7 +116,11 @@ export function Notifications() {
       markAsRead({ notificationId: notification.id });
     }
     if (notification.action_url) {
-      window.location.href = notification.action_url;
+      // Remove /analytics or /emails from the end of the URL
+      const cleanUrl = notification.action_url
+        .replace(/\/analytics$/, "")
+        .replace(/\/emails$/, "");
+      router.push(cleanUrl);
     }
   };
 
@@ -165,7 +187,7 @@ export function Notifications() {
                   key={notification.id}
                   className={`p-4 hover:bg-accent/50 transition-colors cursor-pointer ${
                     !notification.is_read ? "bg-accent/20" : ""
-                  } ${getPriorityColor(notification.priority)}`}
+                  }`}
                   onClick={() => handleNotificationClick(notification)}
                 >
                   <div className="flex gap-3">
@@ -178,9 +200,21 @@ export function Notifications() {
                     </div>
                     <div className="flex-1 space-y-1">
                       <div className="flex items-start justify-between gap-2">
-                        <p className="font-medium text-sm leading-none">
-                          {notification.title}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-sm leading-none">
+                            {notification.title}
+                          </p>
+                          {getPriorityLabel(notification.priority) && (
+                            <Badge
+                              variant={getPriorityBadgeVariant(
+                                notification.priority
+                              )}
+                              className="text-[10px] px-1.5 py-0 h-4 leading-tight"
+                            >
+                              {getPriorityLabel(notification.priority)}
+                            </Badge>
+                          )}
+                        </div>
                         {!notification.is_read && (
                           <div className="h-2 w-2 rounded-full bg-blue-500 shrink-0 mt-1" />
                         )}
