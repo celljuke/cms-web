@@ -45,7 +45,9 @@ export function RecommendationsStats({
             <Sparkles className="h-6 w-6 text-green-500" />
           </div>
           <div>
-            <p className="text-sm text-muted-foreground">High Match (80%+)</p>
+            <p className="text-sm text-muted-foreground">{`${
+              stats.highMatch > 1 ? "High Matches" : "High Match"
+            } (80%+)`}</p>
             <p className="text-2xl font-bold">{stats.highMatch}</p>
           </div>
         </div>

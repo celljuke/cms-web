@@ -25,7 +25,6 @@ export class ProfileService {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -50,7 +49,6 @@ export class ProfileService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 

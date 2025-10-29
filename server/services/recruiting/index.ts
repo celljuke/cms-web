@@ -38,7 +38,6 @@ export class RecruitingService {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      cache: "no-store", // Disable caching for fresh data
     });
 
     if (!response.ok) {
@@ -61,7 +60,6 @@ export class RecruitingService {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -89,7 +87,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
@@ -118,7 +115,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
@@ -148,7 +144,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
@@ -174,7 +169,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
@@ -204,7 +198,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
@@ -234,7 +227,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
@@ -264,7 +256,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
@@ -294,7 +285,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
@@ -320,7 +310,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
@@ -344,7 +333,6 @@ export class RecruitingService {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -374,7 +362,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
@@ -403,7 +390,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
@@ -432,7 +418,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
@@ -523,7 +508,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
@@ -625,7 +609,6 @@ export class RecruitingService {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -650,7 +633,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
@@ -673,7 +655,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
@@ -700,7 +681,6 @@ export class RecruitingService {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(preferences),
-        cache: "no-store",
       }
     );
 
@@ -723,7 +703,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
@@ -761,7 +740,6 @@ export class RecruitingService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       }
     );
 
