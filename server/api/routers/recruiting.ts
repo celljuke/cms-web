@@ -270,4 +270,21 @@ export const recruitingRouter = router({
         ctx.token
       );
     }),
+
+  sendWeeklyReportEmail: protectedProcedure
+    .input(
+      z.object({
+        weeksBack: z.number().int().min(0).default(0),
+        timeFilter: z.enum(["today", "weekly"]).default("weekly"),
+        recipients: z.array(z.string().email()),
+      })
+    )
+    .mutation(({ input, ctx }) => {
+      return recruitingService.sendWeeklyReportEmail(
+        input.weeksBack,
+        input.timeFilter,
+        input.recipients,
+        ctx.token
+      );
+    }),
 });

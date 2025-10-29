@@ -736,6 +736,44 @@ export class RecruitingService {
 
     return response.json();
   }
+
+  async sendWeeklyReportEmail(
+    weeksBack: number,
+    timeFilter: string,
+    recipients: string[],
+    token: string
+  ) {
+    const params = new URLSearchParams({
+      weeks_back: weeksBack.toString(),
+      time_filter: timeFilter,
+    });
+
+    // Add each recipient as a separate query parameter
+    recipients.forEach((email) => {
+      params.append("recipients", email);
+    });
+
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/admin/reports/weekly/email?${params.toString()}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to send weekly report email: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
 }
 
 export const recruitingService = new RecruitingService();

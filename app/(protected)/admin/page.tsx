@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChevronLeft, Calendar, RefreshCw } from "lucide-react";
+import { ChevronLeft, Calendar, RefreshCw, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   OverallStatsSection,
@@ -17,11 +17,13 @@ import {
   JobFunnelTable,
   FunnelDropsSection,
   useWeeklyReport,
+  useSendReportEmail,
 } from "@/modules/admin";
 import type { TimeFilter } from "@/modules/admin";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { format } from "date-fns";
+import { useProfile } from "@/modules/profile";
 
 function AdminDashboardLoading() {
   return (
@@ -63,6 +65,8 @@ export default function AdminDashboardPage() {
   const router = useRouter();
   const [weeksBack, setWeeksBack] = useState(0);
   const [timeFilter, setTimeFilter] = useState<TimeFilter>("weekly");
+  const { profile } = useProfile();
+  const { sendReport, isSending } = useSendReportEmail();
 
   const {
     data: report,
@@ -71,20 +75,26 @@ export default function AdminDashboardPage() {
     isFetching,
   } = useWeeklyReport(weeksBack, timeFilter);
 
+  const handleSendReport = () => {
+    if (!profile?.email) return;
+    sendReport(weeksBack, timeFilter, [profile.email]);
+  };
+
   return (
     <main>
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-12">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.push("/recruiting")}
+          className="mb-4 -ml-2"
+        >
+          <ChevronLeft className="h-4 w-4 mr-2" />
+          Back to Dashboard
+        </Button>
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6 md:mb-8">
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => router.push("/recruiting")}
-              className="shrink-0"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </Button>
             <div className="flex-1">
               <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-1">
                 Admin Dashboard
@@ -95,38 +105,57 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Filters */}
-          <div className="flex items-center gap-3 shrink-0">
+          {/* Filters and Actions */}
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            {/* Time Filter Toggle - Show First */}
             <Select
               value={timeFilter}
-              onValueChange={(value: TimeFilter) => setTimeFilter(value)}
+              onValueChange={(value: TimeFilter) => {
+                setTimeFilter(value);
+                // Reset to current period when changing time filter
+                setWeeksBack(0);
+              }}
             >
               <SelectTrigger className="w-[140px]">
-                <Calendar className="h-4 w-4 mr-2" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="today">Today</SelectItem>
-                <SelectItem value="weekly">This Week</SelectItem>
+                <SelectItem value="today">Today Only</SelectItem>
+                <SelectItem value="weekly">Weekly View</SelectItem>
               </SelectContent>
             </Select>
 
-            <Select
-              value={weeksBack.toString()}
-              onValueChange={(value) => setWeeksBack(Number(value))}
+            {/* Period Selector - Only show for Weekly View */}
+            {timeFilter === "weekly" && (
+              <Select
+                value={weeksBack.toString()}
+                onValueChange={(value) => setWeeksBack(Number(value))}
+              >
+                <SelectTrigger className="w-[160px]">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">This Week</SelectItem>
+                  <SelectItem value="1">Last Week</SelectItem>
+                  <SelectItem value="2">2 Weeks Ago</SelectItem>
+                  <SelectItem value="3">3 Weeks Ago</SelectItem>
+                  <SelectItem value="4">4 Weeks Ago</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+
+            {/* Send Report Button */}
+            <Button
+              variant="default"
+              onClick={handleSendReport}
+              disabled={isSending || !profile?.email}
             >
-              <SelectTrigger className="w-[160px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="0">Current Period</SelectItem>
-                <SelectItem value="1">1 Week Ago</SelectItem>
-                <SelectItem value="2">2 Weeks Ago</SelectItem>
-                <SelectItem value="3">3 Weeks Ago</SelectItem>
-                <SelectItem value="4">4 Weeks Ago</SelectItem>
-              </SelectContent>
-            </Select>
+              <Mail className="h-4 w-4 mr-2" />
+              {isSending ? "Sending..." : "Send Report"}
+            </Button>
 
+            {/* Refresh Button */}
             <Button
               variant="outline"
               size="icon"
