@@ -287,4 +287,31 @@ export const recruitingRouter = router({
         ctx.token
       );
     }),
+
+  getCatsJobDetail: protectedProcedure
+    .input(z.object({ jobId: z.number() }))
+    .query(({ input, ctx }) => {
+      return recruitingService.getCatsJobDetail(input.jobId, ctx.token);
+    }),
+
+  generateAIScreening: protectedProcedure
+    .input(
+      z.object({
+        jobDescription: z.string(),
+        jobName: z.string(),
+      })
+    )
+    .mutation(({ input, ctx }) => {
+      return recruitingService.generateAIScreening(
+        input.jobDescription,
+        input.jobName,
+        ctx.token
+      );
+    }),
+
+  enableAgentVIP: protectedProcedure
+    .input(z.record(z.string(), z.any()))
+    .mutation(({ input, ctx }) => {
+      return recruitingService.enableAgentVIP(input, ctx.token);
+    }),
 });

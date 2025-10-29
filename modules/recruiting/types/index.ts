@@ -1,3 +1,5 @@
+export * from "./enable-agentvip";
+
 export interface AssignedUser {
   id: number;
   name: string;

@@ -752,6 +752,90 @@ export class RecruitingService {
 
     return response.json();
   }
+
+  /**
+   * Get job details from CATS
+   */
+  async getCatsJobDetail(jobId: number, token: string) {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/jobs/${jobId}/details`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch CATS job details: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Generate AI screening email and criteria
+   */
+  async generateAIScreening(
+    jobDescription: string,
+    jobName: string,
+    token: string
+  ) {
+    const response = await fetch(
+      `${API_BASE_URL}/recruiting/ai/screening_mail_and_criteria_rec`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          job_description: jobDescription,
+          job_name: jobName,
+        }),
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to generate AI screening: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Enable AgentVIP on a job (create job in local database)
+   */
+  async enableAgentVIP(payload: Record<string, any>, token: string) {
+    const response = await fetch(`${API_BASE_URL}/recruiting/jobs/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to enable AgentVIP: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response.json();
+  }
 }
 
 export const recruitingService = new RecruitingService();

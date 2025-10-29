@@ -19,6 +19,7 @@ import {
   Pause,
   Loader2,
   Flame,
+  Sparkles,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -27,9 +28,17 @@ import { useUpdateJob } from "../hooks/use-update-job";
 
 interface JobCardProps {
   job: Job;
+  isDraft?: boolean;
+  catsJobId?: number | null;
+  onEnableAgentVIP?: (jobId: number, jobTitle: string) => void;
 }
 
-export function JobCard({ job }: JobCardProps) {
+export function JobCard({
+  job,
+  isDraft,
+  catsJobId,
+  onEnableAgentVIP,
+}: JobCardProps) {
   const router = useRouter();
   const updateJob = useUpdateJob();
   const [isUpdating, setIsUpdating] = useState(false);
@@ -220,43 +229,87 @@ export function JobCard({ job }: JobCardProps) {
         {/* Actions - Always visible */}
         <TooltipProvider>
           <div className="flex items-center gap-2 mt-4 pt-3 border-t">
-            <Tooltip>
-              <TooltipTrigger asChild>
+            {isDraft &&
+            !catsJobId ? // No buttons for draft jobs without cats_job_id
+            null : isDraft && catsJobId ? (
+              // Draft job with cats_job_id: Show "Enable AgentVIP" + "View in CATS"
+              <>
                 <Button
-                  variant="outline"
+                  variant="default"
                   size="sm"
-                  className="flex-1 gap-1.5"
-                  onClick={handleViewInCats}
+                  className="flex-1 gap-1.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEnableAgentVIP?.(
+                      catsJobId,
+                      job.title || job.display_name
+                    );
+                  }}
                 >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  View in CATS
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Enable AgentVIP
                 </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Open job in CATS ATS system</p>
-              </TooltipContent>
-            </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 gap-1.5"
+                      onClick={handleViewInCats}
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      View in CATS
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Open job in CATS ATS system</p>
+                  </TooltipContent>
+                </Tooltip>
+              </>
+            ) : (
+              // Regular job: Show "View in CATS" + Play/Pause
+              <>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 gap-1.5"
+                      onClick={handleViewInCats}
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      View in CATS
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Open job in CATS ATS system</p>
+                  </TooltipContent>
+                </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={handleToggleActive}
-                  disabled={isUpdating}
-                >
-                  {job.is_active ? (
-                    <Pause className="h-3.5 w-3.5" />
-                  ) : (
-                    <Play className="h-3.5 w-3.5" />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{job.is_active ? "Pause this job" : "Activate this job"}</p>
-              </TooltipContent>
-            </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={handleToggleActive}
+                      disabled={isUpdating}
+                    >
+                      {job.is_active ? (
+                        <Pause className="h-3.5 w-3.5" />
+                      ) : (
+                        <Play className="h-3.5 w-3.5" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                      {job.is_active ? "Pause this job" : "Activate this job"}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </>
+            )}
           </div>
         </TooltipProvider>
       </CardContent>

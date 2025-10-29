@@ -6,6 +6,7 @@ import { ViewSwitcher } from "../view-switcher";
 import { JobCard } from "../job-card";
 import { JobListItem } from "../job-list-item";
 import { JobsSkeleton } from "../jobs-skeleton";
+import { EnableAgentVIPSheet } from "../enable-agentvip-sheet";
 import type { JobSubmission, Job } from "../../types";
 
 interface DraftJobsTabProps {
@@ -22,6 +23,25 @@ export function DraftJobsTab({
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("newest");
   const [view, setView] = useState<"card" | "list">("card");
+  const [enableAgentVIPSheetOpen, setEnableAgentVIPSheetOpen] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
+  const [selectedJobTitle, setSelectedJobTitle] = useState("");
+
+  const handleEnableAgentVIP = (jobId: number, jobTitle: string) => {
+    setSelectedJobId(jobId);
+    setSelectedJobTitle(jobTitle);
+    setEnableAgentVIPSheetOpen(true);
+  };
+
+  // Create a mapping of job_id to cats_job_id for draft jobs
+  const draftJobsMetadata = useMemo(() => {
+    if (!draftJobs) return new Map();
+    const map = new Map<number, { cats_job_id: number | null }>();
+    draftJobs.forEach((draft) => {
+      map.set(draft.id, { cats_job_id: draft.cats_job_id });
+    });
+    return map;
+  }, [draftJobs]);
 
   // Transform JobSubmission to Job format for component reuse
   const transformedJobs: Job[] = useMemo(() => {
@@ -121,15 +141,33 @@ export function DraftJobsTab({
       ) : filteredJobs && filteredJobs.length > 0 ? (
         view === "card" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredJobs.map((job) => (
-              <JobCard key={job.job_id} job={job} />
-            ))}
+            {filteredJobs.map((job) => {
+              const metadata = draftJobsMetadata.get(job.job_id);
+              return (
+                <JobCard
+                  key={job.job_id}
+                  job={job}
+                  isDraft={true}
+                  catsJobId={metadata?.cats_job_id}
+                  onEnableAgentVIP={handleEnableAgentVIP}
+                />
+              );
+            })}
           </div>
         ) : (
           <div className="space-y-2">
-            {filteredJobs.map((job) => (
-              <JobListItem key={job.job_id} job={job} />
-            ))}
+            {filteredJobs.map((job) => {
+              const metadata = draftJobsMetadata.get(job.job_id);
+              return (
+                <JobListItem
+                  key={job.job_id}
+                  job={job}
+                  isDraft={true}
+                  catsJobId={metadata?.cats_job_id}
+                  onEnableAgentVIP={handleEnableAgentVIP}
+                />
+              );
+            })}
           </div>
         )
       ) : (
@@ -149,6 +187,14 @@ export function DraftJobsTab({
           )}
         </div>
       )}
+
+      {/* Enable AgentVIP Sheet */}
+      <EnableAgentVIPSheet
+        jobId={selectedJobId}
+        jobTitle={selectedJobTitle}
+        open={enableAgentVIPSheetOpen}
+        onOpenChange={setEnableAgentVIPSheetOpen}
+      />
     </>
   );
 }

@@ -27,13 +27,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useJobCreationStore } from "../../../stores/job-creation-store";
 import { useEffect, useState, useRef } from "react";
-import { useAvailableUsers } from "../../../hooks/use-available-users";
 import { useRephraseField } from "../../../hooks/use-rephrase-field";
-import { Search, X } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { VList } from "virtua";
 import { toast } from "sonner";
+import { RecruiterSelect } from "../../recruiter-select";
 
 const basicInfoSchema = z.object({
   title: z.string().min(1, "Job title is required"),
@@ -62,30 +58,7 @@ const REMOTE_TYPES = ["COVID-19", "Fully remote", "WFH Flexible"];
 
 export function BasicInfoStep({ onValidationChange }: BasicInfoStepProps) {
   const { formData, updateFormData } = useJobCreationStore();
-  const [recruiterSearch, setRecruiterSearch] = useState("");
-  const [selectedRecruiterId, setSelectedRecruiterId] = useState<
-    number | undefined
-  >(formData.recruiter_id);
-  const [showRecruitersList, setShowRecruitersList] = useState(false);
-  const recruitersListRef = useRef<HTMLDivElement>(null);
-
-  const { data: users, isLoading: isUsersLoading } = useAvailableUsers();
   const rephraseField = useRephraseField();
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        recruitersListRef.current &&
-        !recruitersListRef.current.contains(event.target as Node)
-      ) {
-        setShowRecruitersList(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const form = useForm<BasicInfoFormData>({
     resolver: zodResolver(basicInfoSchema),
@@ -100,26 +73,6 @@ export function BasicInfoStep({ onValidationChange }: BasicInfoStepProps) {
       recruiter_id: formData.recruiter_id,
     },
   });
-
-  const filteredUsers = users?.filter((user) =>
-    user.name.toLowerCase().includes(recruiterSearch.toLowerCase())
-  );
-
-  const selectedRecruiter = users?.find(
-    (user) => user.id === selectedRecruiterId
-  );
-
-  const handleSelectRecruiter = (userId: number) => {
-    setSelectedRecruiterId(userId);
-    form.setValue("recruiter_id", userId);
-    setRecruiterSearch("");
-    setShowRecruitersList(false);
-  };
-
-  const handleRemoveRecruiter = () => {
-    setSelectedRecruiterId(undefined);
-    form.setValue("recruiter_id", undefined);
-  };
 
   const handleRephraseDescription = async () => {
     const currentDescription = form.getValues("description");
@@ -344,116 +297,15 @@ export function BasicInfoStep({ onValidationChange }: BasicInfoStepProps) {
             <FormField
               control={form.control}
               name="recruiter_id"
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Assign Recruiter</FormLabel>
-                  <div className="space-y-3">
-                    {selectedRecruiter ? (
-                      <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/50">
-                        <Avatar className="h-10 w-10">
-                          <AvatarFallback className="bg-primary/10 text-primary">
-                            {selectedRecruiter.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")
-                              .toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium truncate">
-                            {selectedRecruiter.name}
-                          </div>
-                          <div className="text-sm text-muted-foreground truncate">
-                            {selectedRecruiter.email}
-                          </div>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={handleRemoveRecruiter}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="relative" ref={recruitersListRef}>
-                        <div className="relative">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            placeholder="Search recruiters..."
-                            value={recruiterSearch}
-                            onChange={(e) => setRecruiterSearch(e.target.value)}
-                            onFocus={() => setShowRecruitersList(true)}
-                            className="pl-9"
-                          />
-                        </div>
-
-                        {showRecruitersList && (
-                          <>
-                            {isUsersLoading ? (
-                              <div className="absolute z-50 w-full mt-2 border rounded-md bg-background shadow-lg">
-                                <div className="p-2 space-y-2">
-                                  {[...Array(3)].map((_, i) => (
-                                    <Skeleton key={i} className="h-16 w-full" />
-                                  ))}
-                                </div>
-                              </div>
-                            ) : filteredUsers && filteredUsers.length > 0 ? (
-                              <div className="absolute z-50 w-full mt-2 border rounded-md bg-background shadow-lg">
-                                <div className="p-1">
-                                  <VList style={{ height: "300px" }}>
-                                    {filteredUsers.map((user) => (
-                                      <button
-                                        key={user.id}
-                                        type="button"
-                                        onClick={() =>
-                                          handleSelectRecruiter(user.id)
-                                        }
-                                        className="w-full flex items-center gap-3 p-3 hover:bg-muted rounded-md transition-colors text-left"
-                                      >
-                                        <Avatar className="h-10 w-10">
-                                          <AvatarFallback className="bg-primary/10 text-primary">
-                                            {user.name
-                                              .split(" ")
-                                              .map((n) => n[0])
-                                              .join("")
-                                              .toUpperCase()}
-                                          </AvatarFallback>
-                                        </Avatar>
-                                        <div className="flex-1 min-w-0">
-                                          <div className="font-medium truncate">
-                                            {user.name}
-                                          </div>
-                                          <div className="text-sm text-muted-foreground truncate">
-                                            {user.email}
-                                          </div>
-                                        </div>
-                                      </button>
-                                    ))}
-                                  </VList>
-                                </div>
-                                {recruiterSearch && (
-                                  <div className="border-t p-2 text-xs text-muted-foreground text-center">
-                                    Showing {filteredUsers.length} of{" "}
-                                    {users?.length || 0} recruiters
-                                  </div>
-                                )}
-                              </div>
-                            ) : (
-                              <div className="absolute z-50 w-full mt-2 border rounded-md bg-background shadow-lg">
-                                <div className="text-center py-8 text-sm text-muted-foreground">
-                                  {recruiterSearch
-                                    ? "No recruiters found"
-                                    : "No recruiters available"}
-                                </div>
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  <FormControl>
+                    <RecruiterSelect
+                      value={field.value || null}
+                      onChange={(value) => field.onChange(value)}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
