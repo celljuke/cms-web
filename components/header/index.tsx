@@ -104,7 +104,8 @@ export function Header({ profile }: HeaderProps) {
                   <span>Account Settings</span>
                 </Link>
               </DropdownMenuItem>
-              {profile?.role === "admin" && (
+              {(profile?.role === "admin" ||
+                profile?.role === "super_admin") && (
                 <DropdownMenuItem asChild>
                   <Link href="/admin">
                     <BarChart3 className="mr-2 h-4 w-4" />
