@@ -218,13 +218,23 @@ export function RichTextEditor({
       <EditorContent
         editor={editor}
         className={cn(
-          "prose prose-sm max-w-none p-4 min-h-[200px] focus:outline-none",
+          "prose prose-sm dark:prose-invert max-w-none p-4 min-h-[200px] focus:outline-none",
           "[&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[200px]",
+          "[&_.ProseMirror]:text-foreground",
           "[&_.ProseMirror_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)]",
           "[&_.ProseMirror_p.is-editor-empty:first-child::before]:text-muted-foreground",
           "[&_.ProseMirror_p.is-editor-empty:first-child::before]:float-left",
           "[&_.ProseMirror_p.is-editor-empty:first-child::before]:h-0",
-          "[&_.ProseMirror_p.is-editor-empty:first-child::before]:pointer-events-none"
+          "[&_.ProseMirror_p.is-editor-empty:first-child::before]:pointer-events-none",
+          // Dark mode text colors
+          "dark:[&_.ProseMirror]:text-foreground",
+          "dark:[&_.ProseMirror_h1]:text-foreground",
+          "dark:[&_.ProseMirror_h2]:text-foreground",
+          "dark:[&_.ProseMirror_h3]:text-foreground",
+          "dark:[&_.ProseMirror_p]:text-foreground",
+          "dark:[&_.ProseMirror_li]:text-foreground",
+          "dark:[&_.ProseMirror_strong]:text-foreground",
+          "dark:[&_.ProseMirror_em]:text-foreground"
         )}
       />
     </div>
